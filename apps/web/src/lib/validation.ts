@@ -13,10 +13,11 @@ export const snapshotSchema: z.ZodType<Snapshot> = z.object({
 export const snapshotsSchema = z.array(snapshotSchema);
 export const contextSchema = z.object({snapshot:z.string().regex(/^[a-f0-9]{64}$/).optional(),culture:identifier.optional(),scope:identifier.optional(),sample:identifier.optional()});
 
+export const methodSchema = z.enum(['last_observed','damped_trend']);
 export const runConfigurationSchema: z.ZodType<RunConfiguration> = z.object({
   snapshot_id:z.string().regex(/^[a-f0-9]{64}$/), culture_id:identifier, scope:identifier,
   cutoff:z.number().finite(), targets:z.array(z.number().finite()).min(1).refine(values=>new Set(values).size===values.length,'Choose each target once.'),
-  method:z.literal('last_observed'),
+  method:methodSchema,
 });
 export const eligibilitySchema: z.ZodType<Eligibility> = z.object({available:z.boolean(),reason:z.string().nullable().optional()});
 export const runRecordSchema: z.ZodType<RunRecord> = z.object({
