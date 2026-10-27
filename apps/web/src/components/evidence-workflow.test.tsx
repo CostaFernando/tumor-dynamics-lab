@@ -18,6 +18,8 @@ it('retains selected target evidence and the recorded cutoff through guidance an
  await user.click(screen.getByRole('button',{name:'Start guided walkthrough'}));
  await user.click(screen.getByRole('button',{name:'3. Review evidence'}));
  expect(within(selected).getByText('Cutoff: 7 days')).toBeVisible();
+ expect(within(selected).getByRole('button',{name:'Download evidence bundle'})).toBeEnabled();
+ expect(within(selected).getByText(new RegExp('Exports recorded evidence for run '+run.id))).toBeVisible();
  expect(screen.getByLabelText('Evidence target time')).toHaveValue('21');
  await user.click(screen.getByRole('button',{name:'Return to workbench'}));
  expect(screen.getByLabelText('Forecasting cutoff')).toHaveValue('3');
