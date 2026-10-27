@@ -33,6 +33,9 @@ services:
     <<: *runtime
     command: ["node", "node_modules/next/dist/bin/next", "start", "--hostname", "0.0.0.0", "--port", "3000"]
     working_dir: /app/apps/web
+    networks:
+      - research
+      - ingress
     depends_on:
       - api
     ports:
@@ -44,3 +47,4 @@ volumes:
 networks:
   research:
     internal: true
+  ingress:
