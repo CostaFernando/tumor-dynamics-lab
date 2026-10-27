@@ -18,7 +18,7 @@ Open `http://127.0.0.1:3000`. The API listens on `http://127.0.0.1:8000`; Next.j
 
 `pnpm demo` is idempotent. It outputs a SHA-256 snapshot identity and preserves existing snapshots. SQLite metadata and managed snapshot files live under root `data/` by default. Set an absolute `TDL_DATA_DIR` consistently for demo setup, API and later worker processes to use another storage directory. These files are excluded from Git. Snapshot files are content-addressed and verified when read; edits to source observations do not replace a saved snapshot.
 
-The initial inspection capability displays experiment/culture/scope context, correctly scaled sampling times, treatment exposure and withdrawal, observed proportions, raw counts, sample totals and unknown ancestry. The guided inspection view retains selection when returning to the workbench. Forecast configuration is added in subsequent implementation slices.
+The initial inspection capability displays experiment/culture/scope context, correctly scaled sampling times, treatment exposure and withdrawal, observed proportions, raw counts, sample totals and unknown ancestry. The guided inspection view retains selection when returning to the workbench. Prepared local folders can be imported with `uv run tdl import FOLDER`; see [prepared-input format](prepared-input.md) and its fictional valid/invalid examples. Refresh the browser after import. Experiment, culture and scope selections consistently switch observations, including separately labeled descriptive cell states. Forecast configuration is added in subsequent implementation slices.
 
 Inspect saved data independently of HTTP:
 

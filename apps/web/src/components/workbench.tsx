@@ -55,6 +55,7 @@ export function Workbench({snapshots}: {snapshots: Snapshot[]}) {
           <Card><CardHeader><CardTitle>Forecast setup</CardTitle></CardHeader><CardContent><p className="muted">Forecast configuration is not available in this initial inspection view.</p></CardContent></Card>
         </aside>
         <section className="stack">
+          {!observation ? <Card><CardHeader><CardTitle>Culture observations</CardTitle></CardHeader><CardContent><p>No samples in this culture.</p><p className="muted">Choose a sampled culture, or prepare a new snapshot through the CLI. Cultures and sampling scopes are never pooled.</p></CardContent></Card> : <>
           <Card><CardHeader><CardTitle>Experimental timeline</CardTitle></CardHeader><CardContent>
             <p className="muted small">{culture.name} · {activeScope} · {experiment.time_unit}</p>
             <div className="timeline" style={{minHeight:140+(culture.treatments?.length??0)*28}}>
@@ -70,6 +71,7 @@ export function Workbench({snapshots}: {snapshots: Snapshot[]}) {
             {observation.sample.cell_state_summary && <div className="quiet"><strong>Descriptive cell-state information</strong><p>{observation.sample.cell_state_summary}</p><p>Cell state is separate from lineage identity.</p></div>}
             <p className="muted small">Proportions describe sampled composition, not absolute abundance. Non-detection does not establish extinction. Unknown ancestry stays in the denominator.</p>
           </CardContent></Card>
+          </>}
         </section>
         <aside className="stack"><Card><CardHeader><CardTitle>Run history</CardTitle></CardHeader><CardContent><div className="empty"><h3>No forecast runs yet</h3><p className="muted small">Saved attempts will appear here when forecast execution is available.</p></div></CardContent></Card><Card><CardHeader><CardTitle>Reading this experiment</CardTitle></CardHeader><CardContent><p className="muted">Lineage describes shared ancestry. A lineage can contain several cell states.</p><p className="notice">{experiment.synthetic?'Fictional data exercises software behavior. Synthetic results do not establish biological validity.':'Separate cultures are not automatically biologically independent.'}</p><p className="muted small">Prepared snapshots are imported through the CLI.</p></CardContent></Card></aside>
       </div>
