@@ -1,0 +1,212 @@
+{
+  "id": "9034c7b15e08740295c68cd16ddcdff472a4c64daabbf887c47038e829a9a7e9",
+  "experiment": {
+    "format_version": "1",
+    "id": "fictional-recovery-v1",
+    "name": "Fictional recovery study",
+    "synthetic": true,
+    "time_unit": "days",
+    "description": "Fixed synthetic observations across exposure, withdrawal and recovery. Not SUM159PT biology.",
+    "acquisition": "Original fictional counts authored for this demonstration.",
+    "redistribution": "MIT; no external dataset.",
+    "cultures": [
+      {
+        "id": "culture-01",
+        "name": "Culture 01",
+        "treatments": [
+          {
+            "name": "Fictional treatment",
+            "start": 0.0,
+            "end": 10.0,
+            "dose": "Illustrative dose"
+          }
+        ]
+      }
+    ],
+    "samples": [
+      {
+        "id": "day-0",
+        "culture_id": "culture-01",
+        "scope": "whole culture",
+        "time": 0.0,
+        "counts": {
+          "A": 40,
+          "B": 30,
+          "C": 20,
+          "__unknown__": 10
+        },
+        "cell_state_summary": null
+      },
+      {
+        "id": "day-3",
+        "culture_id": "culture-01",
+        "scope": "whole culture",
+        "time": 3.0,
+        "counts": {
+          "A": 50,
+          "B": 25,
+          "C": 15,
+          "__unknown__": 10
+        },
+        "cell_state_summary": null
+      },
+      {
+        "id": "day-7",
+        "culture_id": "culture-01",
+        "scope": "whole culture",
+        "time": 7.0,
+        "counts": {
+          "A": 65,
+          "B": 25,
+          "C": 0,
+          "__unknown__": 10
+        },
+        "cell_state_summary": null
+      },
+      {
+        "id": "day-14",
+        "culture_id": "culture-01",
+        "scope": "whole culture",
+        "time": 14.0,
+        "counts": {
+          "A": 45,
+          "B": 25,
+          "C": 10,
+          "D": 10,
+          "__unknown__": 10
+        },
+        "cell_state_summary": null
+      },
+      {
+        "id": "day-21",
+        "culture_id": "culture-01",
+        "scope": "whole culture",
+        "time": 21.0,
+        "counts": {
+          "A": 30,
+          "B": 25,
+          "C": 20,
+          "D": 15,
+          "__unknown__": 10
+        },
+        "cell_state_summary": null
+      }
+    ]
+  },
+  "observations": [
+    {
+      "sample": {
+        "id": "day-0",
+        "culture_id": "culture-01",
+        "scope": "whole culture",
+        "time": 0.0,
+        "counts": {
+          "A": 40,
+          "B": 30,
+          "C": 20,
+          "__unknown__": 10
+        },
+        "cell_state_summary": null
+      },
+      "total": 100,
+      "proportions": {
+        "A": 0.4,
+        "B": 0.3,
+        "C": 0.2,
+        "__unknown__": 0.1
+      }
+    },
+    {
+      "sample": {
+        "id": "day-3",
+        "culture_id": "culture-01",
+        "scope": "whole culture",
+        "time": 3.0,
+        "counts": {
+          "A": 50,
+          "B": 25,
+          "C": 15,
+          "__unknown__": 10
+        },
+        "cell_state_summary": null
+      },
+      "total": 100,
+      "proportions": {
+        "A": 0.5,
+        "B": 0.25,
+        "C": 0.15,
+        "__unknown__": 0.1
+      }
+    },
+    {
+      "sample": {
+        "id": "day-7",
+        "culture_id": "culture-01",
+        "scope": "whole culture",
+        "time": 7.0,
+        "counts": {
+          "A": 65,
+          "B": 25,
+          "C": 0,
+          "__unknown__": 10
+        },
+        "cell_state_summary": null
+      },
+      "total": 100,
+      "proportions": {
+        "A": 0.65,
+        "B": 0.25,
+        "C": 0.0,
+        "__unknown__": 0.1
+      }
+    },
+    {
+      "sample": {
+        "id": "day-14",
+        "culture_id": "culture-01",
+        "scope": "whole culture",
+        "time": 14.0,
+        "counts": {
+          "A": 45,
+          "B": 25,
+          "C": 10,
+          "D": 10,
+          "__unknown__": 10
+        },
+        "cell_state_summary": null
+      },
+      "total": 100,
+      "proportions": {
+        "A": 0.45,
+        "B": 0.25,
+        "C": 0.1,
+        "D": 0.1,
+        "__unknown__": 0.1
+      }
+    },
+    {
+      "sample": {
+        "id": "day-21",
+        "culture_id": "culture-01",
+        "scope": "whole culture",
+        "time": 21.0,
+        "counts": {
+          "A": 30,
+          "B": 25,
+          "C": 20,
+          "D": 15,
+          "__unknown__": 10
+        },
+        "cell_state_summary": null
+      },
+      "total": 100,
+      "proportions": {
+        "A": 0.3,
+        "B": 0.25,
+        "C": 0.2,
+        "D": 0.15,
+        "__unknown__": 0.1
+      }
+    }
+  ]
+}

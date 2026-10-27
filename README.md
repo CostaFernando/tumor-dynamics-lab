@@ -4,9 +4,9 @@ A local research workbench for exploring how tumor populations change during tre
 
 ## Project status
 
-Design agreed on 2026-10-26. This repository currently contains the project documentation and agent configuration. The application, installation commands and Docker environment will be added during implementation.
+The first implementation slice supports a persisted fictional experiment, a Python CLI/API, and a Next.js inspection workbench with guided inspection. See [local development commands](docs/development.md). Forecast execution, evaluation, lifecycle controls, prepared-folder import and export are added in subsequent implementation slices.
 
-The authoritative first-release specification lives in GitHub Issues; see the specification link below. Features described here are planned capabilities.
+The authoritative first-release specification lives in GitHub Issues; see the specification link below. The first-release capabilities below describe the complete target; the project-status paragraph identifies the currently implemented slice.
 
 ## First release
 

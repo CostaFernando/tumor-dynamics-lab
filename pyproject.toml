@@ -1,0 +1,14 @@
+[project]
+name = "tumor-dynamics-lab"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = ["tdl-science", "tdl-api"]
+[tool.uv.workspace]
+members = ["packages/science", "apps/api"]
+[tool.uv.sources]
+tdl-science = { workspace = true }
+tdl-api = { workspace = true }
+[dependency-groups]
+dev = ["pytest>=8", "httpx>=0.28"]
+[tool.pytest.ini_options]
+testpaths = ["packages/science/tests", "apps/api/tests"]
