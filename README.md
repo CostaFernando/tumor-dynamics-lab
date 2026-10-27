@@ -19,7 +19,7 @@ pnpm demo
 pnpm dev
 ```
 
-Open `http://127.0.0.1:3000`. Dependencies and local assets must be installed before offline execution. The [release guide](docs/release-verification.md) describes production startup, offline checks and Docker persistence. Docker configuration is supplied; its build/run verification was interrupted by Docker Desktop shutting down on the verification host.
+Open `http://127.0.0.1:3000`. Dependencies and local assets must be installed before offline execution. The [release guide](docs/release-verification.md) describes production startup, offline checks and Docker persistence. The Docker image, separate-service workflow, persistent storage and evidence downloads have also been verified; the release guide distinguishes native offline isolation from the normal Compose network scope.
 
 ## First release
 

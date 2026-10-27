@@ -51,7 +51,7 @@ For a whole application check, launch the API, worker, built frontend and a fres
 
 ## Docker path
 
-The image installs and locks dependencies and builds the frontend before execution. Compose separates demo initialization, API, worker and web processes, mounts persistent `research` storage, and uses an internal network with no external egress. Only the web port is published, bound to localhost.
+The image installs locked dependencies and builds the frontend before execution. Compose separates demo initialization, API, worker and web processes and mounts persistent `research` storage. API and worker attach only to the internal `research` network. Web also attaches to an ordinary `ingress` bridge so Docker can publish its port on localhost. The web container therefore has egress capability: normal Compose startup is a local execution path, not a claim of full network isolation. Only the web port is published, bound to localhost.
 
 ```sh
 docker compose build api
@@ -73,9 +73,9 @@ Build the image before disabling installation network access. `docker compose co
 docker run --rm --network none tumor-dynamics-lab:local python scripts/verify_release.py
 ```
 
-That command's API and worker communicate over container loopback. The full Compose browser path instead uses its internal network so web/API/worker can communicate. The supplied development container path is separate from any future DataAnnotation packaging adapter or environment restrictions.
+That command's API and worker communicate over container loopback, and its two-method import/forecast/evaluation/reopen/export/cancel/retry workflow passed with `--network none`. The normal Compose browser path uses internal research communication plus the web ingress bridge described above. Full browser/application outbound-denied verification was performed natively under OS isolation, as recorded below. The supplied development container path is separate from any future DataAnnotation packaging adapter or environment restrictions.
 
-**Verification limitation:** Compose configuration validation passed on this host. The image build began, then Docker Desktop requested backend shutdown during the apt dependency layer. Its backend log recorded an Electron-requested graceful engine shutdown and explicit VM cancellation; no container result was obtained. Docker build, startup, persistent-volume replay and internal-network egress enforcement therefore remain unverified here. The native CPU/offline checks below passed independently.
+**Docker verification:** The image built successfully on Linux arm64 with Python 3.12.12. The installed release command and all 62 Python tests passed with `--network none`. Normal Compose startup on localhost port 3300 completed both predictors through the web API proxy and separate worker. A fresh browser reopened both saved methods and downloaded ZIPs matching the saved export hashes. Compose down/up retained the same snapshot, run records and export bytes in its named volume. API and worker external TCP probes were rejected with network-unreachable errors. After the reviewed UI/scientific preparation changes at `c67f104`, the image was rebuilt and both-method network-disabled release and normal proxy workflows passed again; the final browser evidence rendered with zero console errors or warnings. The web ingress bridge retains the egress capability stated above. Verification containers were stopped afterward; the named research volume was preserved.
 
 ## Recorded verification — 2026-10-27
 
