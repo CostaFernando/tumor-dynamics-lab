@@ -34,7 +34,7 @@ pnpm test
 pnpm build
 ```
 
-Turborepo coordinates TypeScript and Python checks. Python source and `uv.lock` are explicit global cache inputs. Research/demo commands run directly, outside Turbo caching. `pnpm test` includes Vitest and pytest; it does not imply a full browser journey.
+Turborepo coordinates TypeScript and Python checks. Python source and `uv.lock` are explicit global cache inputs. Research/demo commands run directly, outside Turbo caching. `pnpm test` includes Vitest, pytest and the real CLI/API/worker release seam; the full browser journey is recorded separately in [release verification](release-verification.md).
 
 Regenerate the TypeScript API contract after changing Python API models/routes:
 
@@ -91,3 +91,7 @@ Select **Damped trend extrapolation** in the same forecast form, or add `--metho
 ## Evidence export
 
 Successful saved attempts download a deterministic ZIP from the workbench or guided review. See [bundle format and reproducibility](evidence-export.md) for API behavior, manifest, file contents and snapshot requirements. Downloads use the selected recorded attempt, including when the editable draft differs.
+
+## Production and offline release
+
+See [release verification](release-verification.md) for production startup, the Docker path with persistent storage, outbound-denying native checks and measured fixed-demo resource use. `pnpm verify:release` checks the installed CLI/API/worker/export workflow on temporary fictional data; `pnpm benchmark:demo` records scientific-package timing and memory without setting acceptance thresholds.
