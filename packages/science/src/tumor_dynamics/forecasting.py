@@ -12,7 +12,7 @@ class RunConfiguration(Model):
     scope: Identifier
     cutoff: float
     targets: list[float] = Field(min_length=1)
-    method: Literal['last_observed'] = 'last_observed'
+    method: Literal['last_observed', 'damped_trend'] = 'last_observed'
 
 
 class PredictorInput(Model):
@@ -59,7 +59,10 @@ def prepare_forecast(experiment: Experiment, configuration: RunConfiguration) ->
         raise ValueError('Cutoff must be an observed time in the selected culture/scope')
     if any(t not in {s.time for s in selected} for t in configuration.targets):
         raise ValueError('Targets must be measured times in the selected culture/scope')
-    return PredictorInput(observations=[s for s in selected if s.time <= configuration.cutoff], cutoff=configuration.cutoff, targets=configuration.targets)
+    inputs = PredictorInput(observations=[s for s in selected if s.time <= configuration.cutoff], cutoff=configuration.cutoff, targets=configuration.targets)
+    if configuration.method == 'damped_trend' and len(inputs.observations) < 2:
+        raise ValueError('Damped trend requires at least two distinct input sampling times')
+    return inputs
 
 
 def predict_last_observed(inputs: PredictorInput) -> ForecastResult:
@@ -82,3 +85,30 @@ def eligibility(experiment: Experiment, configuration: RunConfiguration) -> Elig
     except ValueError as error:
         return Eligibility(available=False, reason=str(error))
     return Eligibility(available=True)
+
+
+def predict_damped_trend(inputs: PredictorInput) -> ForecastResult:
+    """Fixed-alpha centered-log trend with bounded exponential damping."""
+    import math
+    observations = sorted(inputs.observations, key=lambda sample: sample.time)
+    if len(observations) < 2:
+        raise ValueError('Damped trend requires at least two distinct input sampling times')
+    categories = sorted({category for sample in observations for category, count in sample.counts.items() if count > 0} | {'__unknown__'})
+    earlier, latest = observations[-2:]
+    def centered_log(sample: Sample) -> list[float]:
+        counts = [sample.counts.get(category, 0) + 0.5 for category in categories]
+        total = sum(counts)
+        logs = [math.log(count / total) for count in counts]
+        mean = math.fsum(logs) / len(logs)
+        return [value - mean for value in logs]
+    z0, z1 = centered_log(earlier), centered_log(latest)
+    delta = latest.time - earlier.time
+    predictions = []
+    for target in inputs.targets:
+        damping = -math.expm1(-(target - latest.time) / delta)
+        logits = [current + damping * (current - previous) for previous, current in zip(z0, z1, strict=True)]
+        largest = max(logits)
+        weights = [math.exp(value - largest) for value in logits]
+        total = math.fsum(weights)
+        predictions.append(TargetPrediction(time=target, proportions=dict(zip(categories, (weight / total for weight in weights), strict=True))))
+    return ForecastResult(input_categories=categories, input_observations=observations, predictions=predictions)

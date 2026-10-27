@@ -493,7 +493,10 @@
           },
           "method": {
             "type": "string",
-            "const": "last_observed",
+            "enum": [
+              "last_observed",
+              "damped_trend"
+            ],
             "title": "Method",
             "default": "last_observed"
           }
