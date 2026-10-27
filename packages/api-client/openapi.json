@@ -1,0 +1,381 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Tumor Dynamics Lab",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/snapshots": {
+      "get": {
+        "summary": "List Snapshots",
+        "operationId": "list_snapshots",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Snapshot"
+                  },
+                  "type": "array",
+                  "title": "Response List Snapshots"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/snapshots/{snapshot_id}": {
+      "get": {
+        "summary": "Get Snapshot",
+        "operationId": "get_snapshot",
+        "parameters": [
+          {
+            "name": "snapshot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Snapshot Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Snapshot"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Culture": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "treatments": {
+            "items": {
+              "$ref": "#/components/schemas/Treatment"
+            },
+            "type": "array",
+            "title": "Treatments"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "Culture"
+      },
+      "Experiment": {
+        "properties": {
+          "format_version": {
+            "type": "string",
+            "const": "1",
+            "title": "Format Version",
+            "default": "1"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "synthetic": {
+            "type": "boolean",
+            "title": "Synthetic"
+          },
+          "time_unit": {
+            "type": "string",
+            "enum": [
+              "hours",
+              "days"
+            ],
+            "title": "Time Unit"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "acquisition": {
+            "type": "string",
+            "title": "Acquisition",
+            "default": ""
+          },
+          "redistribution": {
+            "type": "string",
+            "title": "Redistribution",
+            "default": ""
+          },
+          "cultures": {
+            "items": {
+              "$ref": "#/components/schemas/Culture"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Cultures"
+          },
+          "samples": {
+            "items": {
+              "$ref": "#/components/schemas/Sample"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Samples"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "synthetic",
+          "time_unit",
+          "cultures",
+          "samples"
+        ],
+        "title": "Experiment"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Observation": {
+        "properties": {
+          "sample": {
+            "$ref": "#/components/schemas/Sample"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "proportions": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Proportions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "sample",
+          "total",
+          "proportions"
+        ],
+        "title": "Observation"
+      },
+      "Sample": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "culture_id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Culture Id"
+          },
+          "scope": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Scope"
+          },
+          "time": {
+            "type": "number",
+            "title": "Time"
+          },
+          "counts": {
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0.0
+            },
+            "propertyNames": {
+              "maxLength": 200,
+              "minLength": 1
+            },
+            "type": "object",
+            "title": "Counts"
+          },
+          "cell_state_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cell State Summary"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "culture_id",
+          "scope",
+          "time",
+          "counts"
+        ],
+        "title": "Sample"
+      },
+      "Snapshot": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "experiment": {
+            "$ref": "#/components/schemas/Experiment"
+          },
+          "observations": {
+            "items": {
+              "$ref": "#/components/schemas/Observation"
+            },
+            "type": "array",
+            "title": "Observations"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "experiment",
+          "observations"
+        ],
+        "title": "Snapshot"
+      },
+      "Treatment": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "start": {
+            "type": "number",
+            "title": "Start"
+          },
+          "end": {
+            "type": "number",
+            "title": "End"
+          },
+          "dose": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dose"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "start",
+          "end"
+        ],
+        "title": "Treatment"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

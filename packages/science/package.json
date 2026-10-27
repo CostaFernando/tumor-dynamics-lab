@@ -1,0 +1,8 @@
+{
+  "name": "@tdl/science",
+  "private": true,
+  "scripts": {
+    "check": "uv run python -m compileall -q src",
+    "test": "uv run pytest tests -q"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@tdl/api",
+  "private": true,
+  "scripts": {
+    "dev": "cd ../.. && uv run uvicorn tumor_api.app:app --host 127.0.0.1 --port 8000",
+    "check": "uv run python -m compileall -q src",
+    "test": "uv run pytest tests -q"
+  }
+}
