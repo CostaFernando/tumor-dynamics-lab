@@ -1,7 +1,7 @@
 """Forecast boundary: predictors receive only cutoff-bounded observations."""
 from typing import Literal
 from pydantic import Field, model_validator
-from .models import Model, Identifier, Experiment, Sample
+from .models import Model, Identifier, Experiment, Sample, UNKNOWN_ANCESTRY
 from .composition import composition
 from .evaluation_models import TargetEvaluation
 
@@ -65,9 +65,14 @@ def prepare_forecast(experiment: Experiment, configuration: RunConfiguration) ->
     return inputs
 
 
+def _input_history(inputs: PredictorInput) -> tuple[list[Sample], list[str]]:
+    observations = sorted(inputs.observations, key=lambda sample: sample.time)
+    categories = sorted({category for sample in observations for category, count in sample.counts.items() if count > 0} | {UNKNOWN_ANCESTRY})
+    return observations, categories
+
+
 def predict_last_observed(inputs: PredictorInput) -> ForecastResult:
-    observations = sorted(inputs.observations, key=lambda s:s.time)
-    categories = sorted({category for s in observations for category,count in s.counts.items() if count > 0} | {'__unknown__'})
+    observations, categories = _input_history(inputs)
     latest = composition(observations[-1])
     proportions = {category:latest.proportions.get(category,0.0) for category in categories}
     return ForecastResult(input_categories=categories, input_observations=observations,
@@ -90,10 +95,9 @@ def eligibility(experiment: Experiment, configuration: RunConfiguration) -> Elig
 def predict_damped_trend(inputs: PredictorInput) -> ForecastResult:
     """Fixed-alpha centered-log trend with bounded exponential damping."""
     import math
-    observations = sorted(inputs.observations, key=lambda sample: sample.time)
+    observations, categories = _input_history(inputs)
     if len(observations) < 2:
         raise ValueError('Damped trend requires at least two distinct input sampling times')
-    categories = sorted({category for sample in observations for category, count in sample.counts.items() if count > 0} | {'__unknown__'})
     earlier, latest = observations[-2:]
     def centered_log(sample: Sample) -> list[float]:
         counts = [sample.counts.get(category, 0) + 0.5 for category in categories]
