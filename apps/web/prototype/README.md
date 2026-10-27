@@ -2,7 +2,7 @@
 
 Question: should the first-release retrospective forecasting workflow be organized as a guided study, a spatial workbench, or a run notebook?
 
-**Verdict: awaiting Fernando's comparison. No UX direction is approved, and this is not production implementation.**
+**Approved by Fernando on 2026-10-27: B — Research workbench, with A's guided first-run flow.** Keep setup, observations, evidence, and history together for repeated research work; use inspect → configure → review guidance to introduce the forecast boundary. This remains a throwaway prototype, not production implementation.
 
 ## Run
 
@@ -12,7 +12,7 @@ From the repository root, with Python 3:
 python3 apps/web/prototype/serve.py
 ```
 
-Open http://127.0.0.1:4317/?variant=A. No dependencies or network needed. The server binds only to localhost and refuses to run with `NODE_ENV=production`.
+Open http://127.0.0.1:4317/?variant=B. No dependencies or network needed. The server binds only to localhost and refuses to run with `NODE_ENV=production`.
 
 There is no existing application route or styling system in the repository. This isolated HTML page sits beside the planned web application and deliberately does not scaffold the production stack.
 
@@ -21,6 +21,8 @@ There is no existing application route or styling system in the repository. This
 | A — Guided study | Three steps: inspect, configure, review | Does a focused path clarify the forecast boundary, or slow down repeat work? |
 | B — Research workbench | Setup on the left, observations/evidence in the middle, run history beside them on wide screens | Is keeping context visible worth the increased density? |
 | C — Run notebook | Research records sidebar and a sequential context/recipe/evidence document | Does a readable research record justify scrolling between setup and results? |
+
+The default entry opens B. **Start guided walkthrough** opens A; **Return to workbench** returns to B while retaining the draft and runs. C remains an unselected exploration for historical comparison.
 
 Switch with the bottom bar or left/right arrows outside form controls. `?variant=A`, `B`, or `C` survives reload. Drafts and runs survive variant switching but not page reload.
 
@@ -50,6 +52,6 @@ All relevant state is visible in the state drawer and logged to the console. The
 
 Primary source: `codex/prototype-ux-directions`, under `apps/web/prototype/`.
 
-Spec: issue #1. Relevant implementation slices: #2–#8. Selection should inform navigation and display criteria before production implementation, without replacing the scientific constraints in #1.
+Spec: issue #1. Relevant implementation slices: #2–#8. The approved UX decision and its implementation acceptance criteria are authoritative in issue #1 and the affected tickets #2–#9. The scientific constraints in #1 remain unchanged.
 
-Working recommendation (not a decision): B for repeated research work, with A's guidance for the first run; consider C's context/recipe/evidence structure for saved-run detail. After user selection, record the approved direction and reasons in GitHub Issues. Keep the discarded prototype on this branch and rewrite the accepted design under production constraints.
+The approved direction is B with A's guidance. C's separate notebook navigation is not part of the chosen direction. Keep the full exploration on this branch, outside main, and rewrite the accepted design under production constraints. The comparison switcher, state inspector, simulated worker, and browser-side fixture calculations are prototype tools, not product requirements.

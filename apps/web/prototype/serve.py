@@ -7,5 +7,5 @@ if os.environ.get('NODE_ENV') == 'production':
     raise SystemExit('This throwaway prototype is disabled in production.')
 
 os.chdir(Path(__file__).parent)
-print('UX prototype: http://127.0.0.1:4317/?variant=A', flush=True)
+print('UX prototype: http://127.0.0.1:4317/?variant=B', flush=True)
 ThreadingHTTPServer(('127.0.0.1', 4317), SimpleHTTPRequestHandler).serve_forever()
