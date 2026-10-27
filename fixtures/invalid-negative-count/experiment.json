@@ -1,0 +1,9 @@
+{
+  "format_version": "1",
+  "id": "invalid-example",
+  "name": "Invalid negative count example",
+  "synthetic": true,
+  "time_unit": "days",
+  "cultures": [{"id": "culture-a", "name": "Culture A"}],
+  "samples": [{"id": "a-0", "culture_id": "culture-a", "scope": "whole culture", "time": 0, "counts": {"A": -1, "__unknown__": 2}}]
+}
