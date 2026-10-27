@@ -1,0 +1,30 @@
+from fastapi.testclient import TestClient
+from tumor_api.app import create_app
+from tumor_dynamics.demo import setup_demo
+from tumor_dynamics.storage import Store
+from tumor_dynamics.worker import process_next
+
+
+def test_api_creates_queued_attempt_and_reopens_original_saved_configuration(tmp_path):
+    snapshot = setup_demo(Store(tmp_path))
+    client = TestClient(create_app(tmp_path))
+    request = dict(snapshot_id=snapshot.id,culture_id='culture-01',scope='whole culture',cutoff=7,targets=[14],method='last_observed')
+    assert client.post('/forecast/eligibility',json=request).json()['available'] is True
+    response = client.post('/runs',json=request)
+    assert response.status_code == 201
+    run = response.json()
+    assert run['status'] == 'queued'
+    process_next(Store(tmp_path))
+    saved = client.get('/runs/'+run['id']).json()
+    assert saved['status'] == 'succeeded'
+    assert saved['configuration'] == request
+    assert saved['result']['predictions'][0]['proportions']['C'] == 0
+    assert client.get('/runs').json()[0] == saved
+    assert client.get('/runs/no-such-run').status_code == 404
+    request['scope'] = 'incompatible fraction'
+    eligibility = client.post('/forecast/eligibility',json=request).json()
+    assert eligibility['available'] is False
+    assert 'scope' in eligibility['reason']
+    assert client.post('/runs',json=request).status_code == 422
+    request['cutoff'] = '7'
+    assert client.post('/runs',json=request).status_code == 422

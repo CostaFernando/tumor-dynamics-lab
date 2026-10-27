@@ -38,6 +38,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/forecast/eligibility": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Forecast Eligibility */
+        post: operations["forecast_eligibility"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Runs */
+        get: operations["list_runs"];
+        put?: never;
+        /** Create Run */
+        post: operations["create_run"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/runs/{run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Run */
+        get: operations["get_run"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -50,6 +102,13 @@ export interface components {
             name: string;
             /** Treatments */
             treatments?: components["schemas"]["Treatment"][];
+        };
+        /** Eligibility */
+        Eligibility: {
+            /** Available */
+            available: boolean;
+            /** Reason */
+            reason?: string | null;
         };
         /** Experiment */
         Experiment: {
@@ -90,6 +149,15 @@ export interface components {
             /** Samples */
             samples: components["schemas"]["Sample"][];
         };
+        /** ForecastResult */
+        ForecastResult: {
+            /** Input Categories */
+            input_categories: string[];
+            /** Input Observations */
+            input_observations: components["schemas"]["Sample"][];
+            /** Predictions */
+            predictions: components["schemas"]["TargetPrediction"][];
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -104,6 +172,56 @@ export interface components {
             proportions: {
                 [key: string]: number;
             };
+        };
+        /** RunConfiguration */
+        RunConfiguration: {
+            /** Snapshot Id */
+            snapshot_id: string;
+            /** Culture Id */
+            culture_id: string;
+            /** Scope */
+            scope: string;
+            /** Cutoff */
+            cutoff: number;
+            /** Targets */
+            targets: number[];
+            /**
+             * Method
+             * @default last_observed
+             * @constant
+             */
+            method: "last_observed";
+        };
+        /** RunRecord */
+        RunRecord: {
+            /** Id */
+            id: string;
+            configuration: components["schemas"]["RunConfiguration"];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "running" | "succeeded" | "failed" | "cancelled";
+            /** Created At */
+            created_at: string;
+            /** Method Version */
+            method_version: string;
+            /** Software Version */
+            software_version: string;
+            /** Settings */
+            settings: {
+                [key: string]: boolean | number | string;
+            };
+            /**
+             * Deterministic
+             * @default true
+             */
+            deterministic: boolean;
+            /** Crosses Withdrawal */
+            crosses_withdrawal: boolean;
+            /** Error */
+            error?: string | null;
+            result?: components["schemas"]["ForecastResult"] | null;
         };
         /** Sample */
         Sample: {
@@ -129,6 +247,15 @@ export interface components {
             experiment: components["schemas"]["Experiment"];
             /** Observations */
             observations: components["schemas"]["Observation"][];
+        };
+        /** TargetPrediction */
+        TargetPrediction: {
+            /** Time */
+            time: number;
+            /** Proportions */
+            proportions: {
+                [key: string]: number;
+            };
         };
         /** Treatment */
         Treatment: {
@@ -201,6 +328,123 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Snapshot"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    forecast_eligibility: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RunConfiguration"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Eligibility"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_runs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunRecord"][];
+                };
+            };
+        };
+    };
+    create_run: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RunConfiguration"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunRecord"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_run: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunRecord"];
                 };
             };
             /** @description Validation Error */
