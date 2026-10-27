@@ -66,7 +66,7 @@ export function Workbench({snapshots}: {snapshots: Snapshot[]}) {
           <Card><CardHeader><CardTitle>Forecast setup</CardTitle></CardHeader><CardContent><ForecastSetup configuration={configuration} times={times} timeUnit={experiment.time_unit} onCutoff={value=>{setDraftCutoff(value);setDraftTargets(targets.filter(time=>time>value));}} onTargets={setDraftTargets} onCreated={history.created}/></CardContent></Card>
         </aside>
         <section className="stack">
-          {history.selected && <SavedRun run={history.selected} snapshots={snapshots}/>}
+          {history.selected && <SavedRun run={history.selected} snapshots={snapshots} onChanged={history.created}/>}
           {!observation ? <Card><CardHeader><CardTitle>Culture observations</CardTitle></CardHeader><CardContent><p>No samples in this culture.</p><p className="muted">Choose a sampled culture, or prepare a new snapshot through the CLI. Cultures and sampling scopes are never pooled.</p></CardContent></Card> : <>
           <Card><CardHeader><CardTitle>Experimental timeline</CardTitle></CardHeader><CardContent>
             <p className="muted small">Editable draft timeline · {culture.name} · {activeScope} · {experiment.time_unit}</p>

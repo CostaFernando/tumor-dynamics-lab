@@ -1,13 +1,15 @@
 """Persistent local run queue and immutable recorded outcomes."""
 from datetime import datetime, timezone
 import json
-from typing import Literal
+from typing import Annotated, Literal
+from pydantic import Field
 from uuid import uuid4
 from .models import Model
 from .storage import Store
 from .forecasting import RunConfiguration, ForecastResult, prepare_forecast
 
 SOFTWARE_VERSION = '0.1.0'
+RunId = Annotated[str, Field(pattern=r'^[a-f0-9]{32}$')]
 
 
 class RunRecord(Model):
@@ -99,3 +101,19 @@ class RunRepository:
         with self.store.connect() as db:
             db.execute("UPDATE forecast_runs SET status='failed',error=? WHERE id=? AND status='running'",(explanation,identity))
         return self.get(identity)
+
+    def cancel(self, identity: str) -> RunRecord:
+        with self.store.connect() as db:
+            db.execute("UPDATE forecast_runs SET status='cancelled',error='Cancelled by researcher',result_path=NULL WHERE id=? AND status IN ('queued','running')", (identity,))
+        return self.get(identity)
+
+    def retry(self, identity: str) -> RunRecord:
+        previous = self.get(identity)
+        if previous.status not in ('failed', 'cancelled'):
+            raise ValueError('Only failed or cancelled attempts can be retried')
+        return self.enqueue(previous.configuration)
+
+    def recover_interrupted(self) -> None:
+        """Call only while holding the exclusive worker ownership lock."""
+        with self.store.connect() as db:
+            db.execute("UPDATE forecast_runs SET status='failed',error='Worker interrupted before finalization; retry creates a new attempt',result_path=NULL WHERE status='running'")

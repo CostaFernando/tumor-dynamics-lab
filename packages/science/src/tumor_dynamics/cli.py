@@ -4,7 +4,7 @@ import sys
 import time
 from .forecasting import RunConfiguration
 from .runs import RunRepository
-from .worker import process_next
+from .worker import Worker
 from .demo import setup_demo
 from .prepared import import_prepared
 from .storage import Store
@@ -44,18 +44,19 @@ def main():
         elif args.command == 'run':
             print(RunRepository(store).get(args.run_id).model_dump_json(indent=2))
         elif args.command == 'worker':
-            while True:
-                identity = process_next(store)
-                if args.once:
-                    print(json.dumps({'processed_run':identity}))
-                    break
-                if identity is None:
-                    time.sleep(0.25)
+            with Worker(store) as worker:
+                while True:
+                    identity = worker.process_next()
+                    if args.once:
+                        print(json.dumps({'processed_run':identity}))
+                        break
+                    if identity is None:
+                        time.sleep(0.25)
         else:
             print(store.get_snapshot(args.snapshot_id).model_dump_json(indent=2))
     except KeyboardInterrupt:
         return 0
-    except (ValueError, KeyError, OSError) as error:
+    except (ValueError, KeyError, OSError, RuntimeError) as error:
         print(f'Error: {error}', file=sys.stderr)
         return 1
     return 0

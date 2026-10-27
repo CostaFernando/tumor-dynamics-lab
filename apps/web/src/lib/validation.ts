@@ -26,3 +26,5 @@ export const runRecordSchema: z.ZodType<RunRecord> = z.object({
   result:z.object({input_categories:z.array(z.string()),input_observations:z.array(sample),predictions:z.array(z.object({time:z.number().finite(),proportions:z.record(z.string(),z.number().finite().min(0).max(1))}))}).nullable().optional(),
 });
 export const runRecordsSchema = z.array(runRecordSchema);
+
+export const lifecycleActionSchema = z.object({run_id:z.string().regex(/^[a-f0-9]{32}$/,'Choose a valid recorded run.')});

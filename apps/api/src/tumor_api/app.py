@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from tumor_dynamics.models import Snapshot
 from tumor_dynamics.storage import Store
 from tumor_dynamics.forecasting import RunConfiguration, Eligibility, eligibility
-from tumor_dynamics.runs import RunRepository, RunRecord
+from tumor_dynamics.runs import RunRepository, RunRecord, RunId
 
 
 def create_app(root: Path | str | None = None) -> FastAPI:
@@ -49,6 +49,22 @@ def create_app(root: Path | str | None = None) -> FastAPI:
             return RunRepository(store()).get(run_id)
         except KeyError as error:
             raise HTTPException(status_code=404, detail=str(error)) from error
+
+    @app.post('/runs/{run_id}/cancel', response_model=RunRecord, operation_id='cancel_run')
+    def cancel_run(run_id: RunId):
+        try:
+            return RunRepository(store()).cancel(run_id)
+        except KeyError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+
+    @app.post('/runs/{run_id}/retry', response_model=RunRecord, status_code=201, operation_id='retry_run')
+    def retry_run(run_id: RunId):
+        try:
+            return RunRepository(store()).retry(run_id)
+        except KeyError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+        except ValueError as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
 
     return app
 

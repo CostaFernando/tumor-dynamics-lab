@@ -1,8 +1,9 @@
+import { RunActions } from './run-actions';
 import type { RunRecord, Snapshot } from '@tdl/api-client';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 const label = (category:string)=>category==='__unknown__'?'Unknown ancestry':`Lineage ${category}`;
-export function SavedRun({run,snapshots}:{run:RunRecord;snapshots:Snapshot[]}) {
+export function SavedRun({run,snapshots,onChanged}:{run:RunRecord;snapshots:Snapshot[];onChanged?:(run:RunRecord)=>void}) {
   const snapshot = snapshots.find(value=>value.id===run.configuration.snapshot_id);
   const unit = snapshot?.experiment.time_unit ?? 'time units';
   const culture = snapshot?.experiment.cultures.find(value=>value.id===run.configuration.culture_id);
@@ -11,6 +12,7 @@ export function SavedRun({run,snapshots}:{run:RunRecord;snapshots:Snapshot[]}) {
     {run.crosses_withdrawal && <p className="notice">This forecast crosses treatment withdrawal. The baseline does not model its biological effect.</p>}
     {(run.status==='queued'||run.status==='running') && <p role="status">{run.status==='queued'?'Queued for the separate local worker.':'The local worker is processing this attempt.'} Closing the browser does not cancel execution.</p>}
     {run.error && <p role="alert">{run.error}</p>}
+    {onChanged && <RunActions key={run.id} run={run} onChanged={onChanged}/>}
     {run.result && <div className="stack"><h3>Saved predictions</h3><p className="muted small">Input sampling times: {run.result.input_observations.map(observation=>observation.time).join(', ')} {unit}. Measurements after the recorded cutoff were excluded from the predictor.</p>{run.result.predictions.map(prediction=><div key={prediction.time}><h3>Forecast at {prediction.time} {unit}</h3><Table><TableHeader><TableRow><TableHead>Category</TableHead><TableHead>Predicted proportion</TableHead></TableRow></TableHeader><TableBody>{Object.entries(prediction.proportions).map(([category,value])=><TableRow key={category}><TableCell>{label(category)}</TableCell><TableCell>{(value*100).toFixed(1)}%</TableCell></TableRow>)}</TableBody></Table></div>)}<p className="muted small">These saved values reopen without recomputation. Held-out comparison is added in the evaluation view.</p></div>}
   </CardContent></Card></section>;
 }

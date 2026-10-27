@@ -66,3 +66,24 @@ it('creates a persisted queued run from the draft and exposes API rejection erro
   await user.click(button);
   expect(await screen.findByText('The selected sampling scope has no measured targets')).toBeVisible();
 });
+
+it('keeps a cancelled attempt in history while retry selects a new recorded attempt',async()=>{
+  const user=userEvent.setup();
+  const original={...saved,id:'d'.repeat(32),status:'cancelled',error:'Cancelled by researcher',result:null};
+  const retry={...original,id:'e'.repeat(32),status:'queued',error:null};
+  let retried=false;
+  vi.stubGlobal('fetch',vi.fn(async(request:Request)=>{
+    if(request.url.endsWith('/forecast/eligibility'))return Response.json({available:true});
+    if(request.url.endsWith('/retry')){retried=true;return Response.json(retry,{status:201});}
+    if(request.url.endsWith(`/runs/${original.id}`))return Response.json(original);
+    return Response.json(retried?[retry,original]:[original]);
+  }));
+  render(<Workbench snapshots={snapshotsSchema.parse([snapshot])}/>);
+  await user.click(await screen.findByRole('button',{name:`Open ${original.id} · cancelled`}));
+  expect(await screen.findByText('Cancelled by researcher')).toBeVisible();
+  await user.click(screen.getByRole('button',{name:'Retry as new attempt'}));
+  const evidence=screen.getByRole('region',{name:'Selected saved run'});
+  expect(within(evidence).getByText(`Recorded evidence · ${retry.id}`)).toBeVisible();
+  expect(screen.getByRole('button',{name:`Open ${original.id} · cancelled`})).toBeVisible();
+  expect(screen.getByRole('button',{name:`Open ${retry.id} · queued`})).toBeVisible();
+});
