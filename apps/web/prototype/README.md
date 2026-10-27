@@ -55,3 +55,19 @@ Primary source: `codex/prototype-ux-directions`, under `apps/web/prototype/`.
 Spec: issue #1. Relevant implementation slices: #2–#8. The approved UX decision and its implementation acceptance criteria are authoritative in issue #1 and the affected tickets #2–#9. The scientific constraints in #1 remain unchanged.
 
 The approved direction is B with A's guidance. C's separate notebook navigation is not part of the chosen direction. Keep the full exploration on this branch, outside main, and rewrite the accepted design under production constraints. The comparison switcher, state inspector, simulated worker, and browser-side fixture calculations are prototype tools, not product requirements.
+
+## Variant B motion exploration — 2026-10-27
+
+Added at Fernando's request after selection of B + A guidance:
+
+- Original cell-inspired SVG illustration with a brief, finite nucleus/organelles entrance (decorative, not biological simulation).
+- Staggered workbench entrance and short evidence transitions only when the selected run, status or target changes. Ordinary form changes do not replay the workspace entrance.
+- Queued pulse, running spinner and completion check, with explicit textual status and a shortcut to the selected attempt/evidence. These are indeterminate indicators, not estimates of progress.
+- Subtle button feedback, a motion toggle, and `prefers-reduced-motion` support. Chart geometry, proportions and numerical scores are never animated or interpolated.
+- Focus retention for identified form controls/action buttons through the prototype's rerenders.
+
+Reviewed [LottieFiles cell collection](https://lottiefiles.com/free-animations/cell) and [general gallery](https://lottiefiles.com/free-animations/). Chose original inline SVG/CSS for this small motion layer: no downloaded assets, player dependency, CDN or external license requirements. Original assets are covered by the repository's MIT license.
+
+Manual browser verification: variant B renders, a forecast reaches completed evidence, the queued glyph has the expected animation, and turning motion off results in `animation: none` and zero transition duration. OS reduced-motion handling is implemented in CSS and the control label; no OS setting was changed for verification.
+
+This is a prototype refinement for review, not an added production acceptance requirement. The approved B + A structure and mandatory production libraries remain specified in issue #1. Reuse the motion intent only after review; keep the throwaway implementation on this branch.
