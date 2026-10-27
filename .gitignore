@@ -1,0 +1,68 @@
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# JavaScript dependencies and generated output
+node_modules/
+.pnpm-store/
+.next/
+.turbo/
+out/
+dist/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyright/
+.coverage
+.coverage.*
+htmlcov/
+
+# Test output
+coverage/
+playwright-report/
+test-results/
+
+# Local research storage; version small synthetic inputs in fixtures/
+/data/
+/datasets/
+/artifacts/
+/runs/
+/exports/
+/work/
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
+*.db
+*.db-wal
+*.db-shm
+
+# Local scratch and logs
+/.scratch/
+*.log
+*.pid
+.ipynb_checkpoints/
+
+# Operating system and editor files
+.DS_Store
+._*
+.idea/
+*.swp
+*.swo
+*~
+
+# Commit dependency lockfiles, source notebooks and synthetic fixtures.
