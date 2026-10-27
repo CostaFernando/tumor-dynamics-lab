@@ -1,7 +1,7 @@
 """A separate CPU worker with exclusive local ownership and explicit recovery."""
 from collections.abc import Callable
 import fcntl
-from .forecasting import prepare_forecast, predict_last_observed
+from .forecasting import prepare_forecast, predict_last_observed, predict_damped_trend
 from .runs import RunRepository, RunRecord
 from .storage import Store
 
@@ -48,7 +48,8 @@ class Worker:
         try:
             snapshot = self.store.get_snapshot(run.configuration.snapshot_id)
             inputs = prepare_forecast(snapshot.experiment, run.configuration)
-            result = predict_last_observed(inputs)
+            predictor = predict_damped_trend if run.configuration.method == 'damped_trend' else predict_last_observed
+            result = predictor(inputs)
             if before_complete is not None:
                 before_complete(run)
             repository.complete(run.id, result)

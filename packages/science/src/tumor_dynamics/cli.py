@@ -24,7 +24,7 @@ def main():
     forecast.add_argument('--scope', required=True)
     forecast.add_argument('--cutoff', type=float, required=True)
     forecast.add_argument('--target', type=float, action='append', required=True)
-    forecast.add_argument('--method', choices=['last_observed'], default='last_observed')
+    forecast.add_argument('--method', choices=['last_observed','damped_trend'], default='last_observed')
     run = commands.add_parser('run', help='Reopen a recorded run without recomputing')
     run.add_argument('run_id')
     worker = commands.add_parser('worker', help='Process the persistent local run queue independently of the browser')

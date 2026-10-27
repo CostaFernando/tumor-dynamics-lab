@@ -29,6 +29,8 @@ class RunRecord(Model):
 def method_metadata(method: str) -> tuple[str,dict]:
     if method == 'last_observed':
         return 'last-observed-v1', {'smoothing':False}
+    if method == 'damped_trend':
+        return 'damped-trend-v1', {'alpha':0.5, 'damping':'1-exp(-h/delta)'}
     raise ValueError('Unsupported forecast method')
 
 

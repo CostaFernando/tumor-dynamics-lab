@@ -222,9 +222,9 @@ export interface components {
             /**
              * Method
              * @default last_observed
-             * @constant
+             * @enum {string}
              */
-            method: "last_observed";
+            method: "last_observed" | "damped_trend";
         };
         /** RunRecord */
         RunRecord: {

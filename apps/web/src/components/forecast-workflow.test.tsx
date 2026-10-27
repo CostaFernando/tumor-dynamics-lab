@@ -87,3 +87,39 @@ it('keeps a cancelled attempt in history while retry selects a new recorded atte
   expect(screen.getByRole('button',{name:`Open ${original.id} · cancelled`})).toBeVisible();
   expect(screen.getByRole('button',{name:`Open ${retry.id} · queued`})).toBeVisible();
 });
+
+it('retains a selected trend method when a cutoff makes it unavailable and preserves it through guidance', async () => {
+  const user = userEvent.setup();
+  const methods:string[]=[];
+  vi.stubGlobal('fetch',vi.fn(async(request:Request)=>{
+    if(request.url.endsWith('/forecast/eligibility')) {
+      const configuration=await request.json();
+      methods.push(configuration.method);
+      return Response.json(configuration.method==='damped_trend'&&configuration.cutoff===0?{available:false,reason:'Damped trend requires at least two distinct input sampling times'}:{available:true});
+    }
+    return Response.json([]);
+  }));
+  render(<Workbench snapshots={snapshotsSchema.parse([snapshot])}/>);
+  await user.selectOptions(screen.getByLabelText('Baseline method'),'damped_trend');
+  await waitFor(()=>expect(screen.getByRole('button',{name:'Create forecast run'})).toBeEnabled());
+  expect(screen.getByText(/fixed 0.5 pseudocount/i)).toBeVisible();
+  await user.selectOptions(screen.getByLabelText('Forecasting cutoff'),'0');
+  expect(await screen.findByText('Damped trend requires at least two distinct input sampling times')).toBeVisible();
+  expect(screen.getByLabelText('Baseline method')).toHaveValue('damped_trend');
+  expect(screen.getByRole('button',{name:'Create forecast run'})).toBeDisabled();
+  await user.click(screen.getByRole('button',{name:'Start guided walkthrough'}));
+  await user.click(screen.getByRole('button',{name:'Return to workbench'}));
+  expect(screen.getByLabelText('Baseline method')).toHaveValue('damped_trend');
+  expect(methods.at(-1)).toBe('damped_trend');
+});
+
+it('reopens a trend attempt with its recorded method independently of the draft', async () => {
+  const user = userEvent.setup();
+  const trend={...saved,configuration:{...saved.configuration,method:'damped_trend'},method_version:'damped-trend-v1',settings:{alpha:.5,damping:'1-exp(-h/delta)'}};
+  vi.stubGlobal('fetch',vi.fn(async(request:Request)=>Response.json(request.url.endsWith('/forecast/eligibility')?{available:true}:request.url.endsWith('/runs/recorded-run')?trend:[trend])));
+  render(<Workbench snapshots={snapshotsSchema.parse([snapshot])}/>);
+  await user.click(await screen.findByRole('button',{name:/Open recorded-run/}));
+  const evidence=await screen.findByRole('region',{name:'Selected saved run'});
+  expect(within(evidence).getByText('Method: Damped trend extrapolation')).toBeVisible();
+  expect(screen.getByLabelText('Baseline method')).toHaveValue('last_observed');
+});
