@@ -7,7 +7,7 @@ pnpm install --frozen-lockfile
 uv sync --frozen
 ```
 
-From the repository root, initialize the fixed fictional experiment and start the API and web development servers:
+From the repository root, initialize the fixed fictional experiment and start the API, separate worker and web development servers:
 
 ```sh
 pnpm demo
@@ -18,7 +18,7 @@ Open `http://127.0.0.1:3000`. The API listens on `http://127.0.0.1:8000`; Next.j
 
 `pnpm demo` is idempotent. It outputs a SHA-256 snapshot identity and preserves existing snapshots. SQLite metadata and managed snapshot files live under root `data/` by default. Set an absolute `TDL_DATA_DIR` consistently for demo setup, API and later worker processes to use another storage directory. These files are excluded from Git. Snapshot files are content-addressed and verified when read; edits to source observations do not replace a saved snapshot.
 
-The initial inspection capability displays experiment/culture/scope context, correctly scaled sampling times, treatment exposure and withdrawal, observed proportions, raw counts, sample totals and unknown ancestry. The guided inspection view retains selection when returning to the workbench. Prepared local folders can be imported with `uv run tdl import FOLDER`; see [prepared-input format](prepared-input.md) and its fictional valid/invalid examples. Refresh the browser after import. Experiment, culture and scope selections consistently switch observations, including separately labeled descriptive cell states. Forecast configuration is added in subsequent implementation slices.
+The initial inspection capability displays experiment/culture/scope context, correctly scaled sampling times, treatment exposure and withdrawal, observed proportions, raw counts, sample totals and unknown ancestry. The guided inspection view retains selection when returning to the workbench. Prepared local folders can be imported with `uv run tdl import FOLDER`; see [prepared-input format](prepared-input.md) and its fictional valid/invalid examples. Refresh the browser after import. Experiment, culture and scope selections consistently switch observations, including separately labeled descriptive cell states. Forecast setup selects a culture, comparable scope, observed cutoff and later measured targets. Queued runs are processed by the separate Python worker; closing the browser does not cancel execution. Saved attempts retain their original configuration and results while the editable draft changes.
 
 Inspect saved data independently of HTTP:
 
@@ -49,3 +49,23 @@ The UI component foundation is generated from shadcn/ui (`new-york` style); `com
 ## Scientific interpretation
 
 All supplied demo observations are fictional, deterministic and CPU-only. Their sampling times span treatment exposure, withdrawal and recovery; C has a non-detection, D is identified only at later times, and unknown ancestry remains explicit. These observations test software behavior and do not validate tumor biology. Proportions do not establish absolute growth; non-detection does not establish extinction. Real-data acquisition and redistribution permissions require separate assessment.
+
+## Persisted forecasts
+
+`pnpm dev` includes the separate worker. To run it independently against the same storage directory:
+
+```sh
+pnpm worker
+```
+
+Queue and inspect a forecast without HTTP or Next.js:
+
+```sh
+uv run tdl forecast --snapshot SNAPSHOT_ID --culture culture-01 --scope "whole culture" --cutoff 7 --target 14 --target 21
+uv run tdl worker --once
+uv run tdl run RUN_ID
+```
+
+The initial `last_observed` predictor preserves the latest unsmoothed sampled composition and retains previously observed input lineages after non-detection. Unknown ancestry remains in the denominator. Python validates eligibility before queueing and passes only observations through the cutoff into the predictor. Future measurements and identities cannot inform prediction. The API exposes the same eligibility and recorded results; the browser does not implement another predictor.
+
+Each new attempt gets a distinct identity. Configuration, snapshot identity, culture/scope, cutoff/targets, method/software versions and fixed settings are saved in SQLite; completed predictions are stored in managed local run files. Reopening reads these saved artifacts without recomputing. Failures remain explicit in run history. These baseline forecasts ignore treatment changes: crossing withdrawal does not model its biological effect. Composition forecasts do not establish absolute growth or extinction, and synthetic demonstrations do not establish biological validity.

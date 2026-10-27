@@ -27,3 +27,24 @@ def test_persistent_queue_runs_without_browser_and_reopens_exact_saved_results(t
     assert second.id != run.id
     assert repository.get(run.id) == saved
     assert len(repository.list()) == 2
+
+
+def test_rejected_request_leaves_no_run_and_worker_failure_has_persisted_explanation(tmp_path):
+    import pytest
+    store = Store(tmp_path)
+    snapshot = setup_demo(store)
+    repository = RunRepository(store)
+    request = RunConfiguration(snapshot_id=snapshot.id,culture_id='culture-01',scope='selected fraction',cutoff=7,targets=[14])
+    with pytest.raises(ValueError,match='scope'):
+        repository.enqueue(request)
+    assert repository.list() == []
+    request.scope = 'whole culture'
+    run = repository.enqueue(request)
+    path = tmp_path/'snapshots'/f'{snapshot.id}.json'
+    path.chmod(0o644)
+    path.write_text('{}')
+    assert process_next(Store(tmp_path)) == run.id
+    failed = RunRepository(Store(tmp_path)).get(run.id)
+    assert failed.status == 'failed'
+    assert 'identity verification' in failed.error
+    assert failed.result is None
