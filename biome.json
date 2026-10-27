@@ -1,0 +1,51 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "apps/web/src/**",
+      "apps/web/*.ts",
+      "apps/web/*.mjs",
+      "apps/web/*.json",
+      "packages/api-client/src/index.ts",
+      "packages/*/package.json",
+      "*.json"
+    ],
+    "experimentalScannerIgnores": [
+      ".git",
+      "node_modules",
+      ".pnpm",
+      ".pnpm-store",
+      ".venv",
+      "venv",
+      "__pycache__",
+      ".next",
+      ".turbo",
+      ".cache",
+      ".pytest_cache",
+      ".mypy_cache",
+      ".ruff_cache",
+      "dist",
+      "build",
+      "out",
+      "coverage",
+      "data",
+      "datasets",
+      "artifacts",
+      "runs",
+      "exports",
+      "work",
+      ".scratch"
+    ]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "main"
+  }
+}

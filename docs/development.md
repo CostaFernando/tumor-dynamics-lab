@@ -46,6 +46,8 @@ Commit both `packages/api-client/openapi.json` and generated `src/schema.ts`. Th
 
 The UI component foundation is generated from shadcn/ui (`new-york` style); `components.json` records aliases and styling. Standard controls use the generated components; the domain-specific timeline and composition view use backend-computed observations. UI assets and system fonts are local.
 
+Biome editor scanning is limited by root `biome.json` to TypeScript/web source and project configuration. Its scanner excludes dependencies, Git internals, Python environments, build output, caches and local research storage. The scanner-name exclusions retain compatibility with the installed Biome 2.1 editor binary. Set `"biome.requireConfiguration": true` in editor user settings so unconfigured folders also require an explicit scan scope. The release check commands remain those listed above.
+
 ## Scientific interpretation
 
 All supplied demo observations are fictional, deterministic and CPU-only. Their sampling times span treatment exposure, withdrawal and recovery; C has a non-detection, D is identified only at later times, and unknown ancestry remains explicit. These observations test software behavior and do not validate tumor biology. Proportions do not establish absolute growth; non-detection does not establish extinction. Real-data acquisition and redistribution permissions require separate assessment.
