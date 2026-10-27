@@ -1,9 +1,10 @@
 from pathlib import Path
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from tumor_dynamics.models import Snapshot
 from tumor_dynamics.storage import Store
 from tumor_dynamics.forecasting import RunConfiguration, Eligibility, eligibility
 from tumor_dynamics.runs import RunRepository, RunRecord, RunId
+from tumor_dynamics.exports import ExportRequest, export_evidence
 
 
 def create_app(root: Path | str | None = None) -> FastAPI:
@@ -61,6 +62,18 @@ def create_app(root: Path | str | None = None) -> FastAPI:
     def retry_run(run_id: RunId):
         try:
             return RunRepository(store()).retry(run_id)
+        except KeyError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+        except ValueError as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+
+    @app.get('/runs/{run_id}/export', response_class=Response, operation_id='export_run',
+             responses={200: {'content': {'application/zip': {'schema': {'type': 'string', 'format': 'binary'}}}, 'description': 'Saved evidence ZIP'},
+                        409: {'description': 'Evidence export unavailable'}})
+    def export_run(run_id: RunId):
+        try:
+            content = export_evidence(store(), ExportRequest(run_id=run_id))
+            return Response(content, media_type='application/zip', headers={'Content-Disposition': f'attachment; filename="evidence-{run_id}.zip"'})
         except KeyError as error:
             raise HTTPException(status_code=404, detail=str(error)) from error
         except ValueError as error:

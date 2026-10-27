@@ -32,3 +32,5 @@ export const runRecordSchema: z.ZodType<RunRecord> = z.object({
 export const runRecordsSchema = z.array(runRecordSchema);
 
 export const lifecycleActionSchema = z.object({run_id:z.string().regex(/^[a-f0-9]{32}$/,'Choose a valid recorded run.')});
+
+export const exportRequestSchema = z.object({run_id:z.string().regex(/^[a-f0-9]{32}$/,'Choose a valid recorded run to export.')});
