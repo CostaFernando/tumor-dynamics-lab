@@ -70,6 +70,12 @@ The initial `last_observed` predictor preserves the latest unsmoothed sampled co
 
 Each new attempt gets a distinct identity. Configuration, snapshot identity, culture/scope, cutoff/targets, method/software versions and fixed settings are saved in SQLite; completed predictions are stored in managed local run files. Reopening reads these saved artifacts without recomputing. Failures remain explicit in run history. These baseline forecasts ignore treatment changes: crossing withdrawal does not model its biological effect. Composition forecasts do not establish absolute growth or extinction, and synthetic demonstrations do not establish biological validity.
 
+## Held-out evidence
+
+Successful new runs save evaluation separately from their original predictions. Open a run and choose one evidence target time to compare aligned forecast and held-out composition. The exhaustive comparison includes all input lineages, later identified lineages and unknown ancestry; target-only lineages receive zero prediction. Each target has its own total variation distance, observed share of previously unseen identified lineages, raw observed counts/totals and signed forecast-minus-observed differences in percentage points. Table filtering leaves scores, chart proportions and denominators unchanged.
+
+The selected saved run retains its original snapshot, culture/scope, cutoff and targets while the editable draft changes. Its recorded input observations can be expanded independently of draft inspection. The guided walkthrough includes inspect → define forecast → review evidence, using the same selected attempt and evidence target as the workbench. Runs recorded before evaluation was available remain readable and explicitly lack evaluation; reopening never silently computes new results.
+
 ## Run lifecycle
 
 The selected saved attempt offers cancellation while queued/running and retry after failure/cancellation. Cancellation and completion use guarded SQLite transitions: whichever terminal outcome commits first is retained. A cancelled attempt never exposes a successful result. Retry creates a distinct identity using the original immutable snapshot and requested configuration; the original remains in history. Actions apply to the selected attempt, independently of edits to the current draft.

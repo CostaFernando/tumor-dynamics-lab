@@ -2,6 +2,7 @@
 from collections.abc import Callable
 import fcntl
 from .forecasting import prepare_forecast, predict_last_observed, predict_damped_trend
+from .evaluation import evaluate_forecast
 from .runs import RunRepository, RunRecord
 from .storage import Store
 
@@ -50,6 +51,8 @@ class Worker:
             inputs = prepare_forecast(snapshot.experiment, run.configuration)
             predictor = predict_damped_trend if run.configuration.method == 'damped_trend' else predict_last_observed
             result = predictor(inputs)
+            held_out = [sample for sample in snapshot.experiment.samples if sample.culture_id == run.configuration.culture_id and sample.scope == run.configuration.scope and sample.time in run.configuration.targets]
+            result = result.model_copy(update={"evaluations":evaluate_forecast(result,held_out)})
             if before_complete is not None:
                 before_complete(run)
             repository.complete(run.id, result)

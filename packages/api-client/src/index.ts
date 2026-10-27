@@ -8,3 +8,6 @@ export type RunConfiguration = components['schemas']['RunConfiguration'];
 export type RunRecord = components['schemas']['RunRecord'];
 export type ForecastResult = components['schemas']['ForecastResult'];
 export type Eligibility = components['schemas']['Eligibility'];
+
+export type TargetEvaluation = components['schemas']['TargetEvaluation'];
+export type CategoryComparison = components['schemas']['CategoryComparison'];

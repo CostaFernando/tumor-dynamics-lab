@@ -30,6 +30,23 @@ def test_api_creates_queued_attempt_and_reopens_original_saved_configuration(tmp
     assert client.post('/runs',json=request).status_code == 422
 
 
+def test_api_returns_persisted_held_out_evidence_without_recalculation(tmp_path):
+    import pytest
+    store = Store(tmp_path)
+    snapshot = setup_demo(store)
+    client = TestClient(create_app(tmp_path))
+    request = dict(snapshot_id=snapshot.id,culture_id='culture-01',scope='whole culture',cutoff=7,targets=[14,21],method='last_observed')
+    run = client.post('/runs',json=request).json()
+    process_next(Store(tmp_path))
+    saved = client.get('/runs/'+run['id']).json()
+    assert saved['result']['evaluations'][0]['total_variation_distance'] == pytest.approx(.2)
+    rows = {row['category']:row for row in saved['result']['evaluations'][0]['categories']}
+    assert rows['D']['previously_unseen'] is True
+    assert rows['__unknown__']['previously_unseen'] is False
+    assert rows['D']['observed_count'] == 10
+    assert client.get('/runs/'+run['id']).json() == saved
+
+
 def test_api_trend_eligibility_and_saved_prediction_are_explicit(tmp_path):
     snapshot = setup_demo(Store(tmp_path))
     client = TestClient(create_app(tmp_path))

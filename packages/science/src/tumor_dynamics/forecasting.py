@@ -3,6 +3,7 @@ from typing import Literal
 from pydantic import Field, model_validator
 from .models import Model, Identifier, Experiment, Sample
 from .composition import composition
+from .evaluation_models import TargetEvaluation
 
 
 class RunConfiguration(Model):
@@ -45,6 +46,7 @@ class ForecastResult(Model):
     input_categories: list[str]
     input_observations: list[Sample]
     predictions: list[TargetPrediction]
+    evaluations: list[TargetEvaluation] = Field(default_factory=list)
 
 
 def prepare_forecast(experiment: Experiment, configuration: RunConfiguration) -> PredictorInput:
