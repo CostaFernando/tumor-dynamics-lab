@@ -29,6 +29,7 @@ export function Workbench({snapshots}: {snapshots: Snapshot[]}) {
   const [guideStep,setGuideStep] = useState(0);
   const [draftCutoff,setDraftCutoff] = useState<number | null>(null);
   const [draftTargets,setDraftTargets] = useState<number[] | null>(null);
+  const [draftMethod,setDraftMethod] = useState<NonNullable<RunConfiguration['method']>>('last_observed');
   const history = useRunHistory();
   function resetDraft(){setDraftCutoff(null);setDraftTargets(null);}
   if (!snapshot) return <main className="empty-workspace"><h1>Tumor Dynamics Lab</h1><p>No experiment snapshots yet.</p><p>Initialize the fictional experiment with <code>pnpm demo</code>, or import a prepared local folder through the CLI.</p><Button onClick={()=>location.reload()}>Refresh experiments</Button></main>;
@@ -41,7 +42,7 @@ export function Workbench({snapshots}: {snapshots: Snapshot[]}) {
   const times = observations.map(o=>o.sample.time);
   const cutoff = draftCutoff !== null && times.includes(draftCutoff) ? draftCutoff : (times[Math.max(0,times.length-3)] ?? 0);
   const targets = draftTargets === null ? times.filter(time=>time>cutoff) : draftTargets;
-  const configuration:RunConfiguration = {snapshot_id:snapshot.id,culture_id:culture.id,scope:activeScope??'',cutoff,targets,method:'last_observed'};
+  const configuration:RunConfiguration = {snapshot_id:snapshot.id,culture_id:culture.id,scope:activeScope??'',cutoff,targets,method:draftMethod};
   const start = Math.min(...times,...(culture.treatments??[]).map(t=>t.start));
   const end = Math.max(...times,...(culture.treatments??[]).map(t=>t.end));
   const position = (time:number) => (time-start)/Math.max(end-start,1)*100;
@@ -63,7 +64,7 @@ export function Workbench({snapshots}: {snapshots: Snapshot[]}) {
             <label className="field">Sampling scope<NativeSelect value={activeScope} onChange={e=>{contextSchema.parse({scope:e.target.value});setScope(e.target.value);setSampleId('');resetDraft();}}>{scopes.map(s=><NativeSelectOption value={s} key={s}>{s}</NativeSelectOption>)}</NativeSelect></label>
             <p className="muted small">Time unit: {experiment.time_unit}</p><p className="snapshot-id">Snapshot {snapshot.id}</p>
           </CardContent></Card>
-          <Card><CardHeader><CardTitle>Forecast setup</CardTitle></CardHeader><CardContent><ForecastSetup configuration={configuration} times={times} timeUnit={experiment.time_unit} onCutoff={value=>{setDraftCutoff(value);setDraftTargets(targets.filter(time=>time>value));}} onTargets={setDraftTargets} onCreated={history.created}/></CardContent></Card>
+          <Card><CardHeader><CardTitle>Forecast setup</CardTitle></CardHeader><CardContent><ForecastSetup configuration={configuration} times={times} timeUnit={experiment.time_unit} onCutoff={value=>{setDraftCutoff(value);setDraftTargets(targets.filter(time=>time>value));}} onTargets={setDraftTargets} onMethod={setDraftMethod} onCreated={history.created}/></CardContent></Card>
         </aside>
         <section className="stack">
           {history.selected && <SavedRun run={history.selected} snapshots={snapshots}/>}

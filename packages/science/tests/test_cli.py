@@ -50,3 +50,16 @@ def test_cli_forecast_runs_in_an_independent_worker_process_and_reopens(tmp_path
     assert saved['status'] == 'succeeded'
     assert saved['configuration']['cutoff'] == 7
     assert saved['result']['predictions'][0]['proportions'] == {'A':.65,'B':.25,'C':0,'__unknown__':.1}
+
+
+def test_cli_trend_is_explicit_and_uses_the_same_saved_run_workflow(tmp_path):
+    env = dict(os.environ,TDL_DATA_DIR=str(tmp_path))
+    def run(*args):
+        return subprocess.run([sys.executable,'-m','tumor_dynamics.cli',*args],env=env,text=True,capture_output=True,check=True)
+    snapshot = json.loads(run('demo').stdout)['snapshot_id']
+    queued = json.loads(run('forecast','--snapshot',snapshot,'--culture','culture-01','--scope','whole culture','--cutoff','7','--target','14','--method','damped_trend').stdout)
+    assert queued['method_version'] == 'damped-trend-v1'
+    run('worker','--once')
+    saved = json.loads(run('run',queued['id']).stdout)
+    assert saved['status'] == 'succeeded'
+    assert saved['result']['predictions'][0]['proportions']['C'] > 0
