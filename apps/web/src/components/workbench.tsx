@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import type { Snapshot, Observation, RunConfiguration } from '@tdl/api-client';
+import type { Snapshot, RunConfiguration } from '@tdl/api-client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
@@ -9,15 +9,7 @@ import { contextSchema } from '@/lib/validation';
 import { ForecastSetup } from './forecast-setup';
 import { SavedRun } from './saved-run';
 import { RunHistory, useRunHistory } from './run-history';
-
-export const categoryLabel = (name: string) => name === '__unknown__' ? 'Unknown ancestry' : `Lineage ${name}`;
-const colors = ['#216d62','#8ca959','#bc8a50','#706c98','#769da9','#a67882'];
-
-export function CompositionBar({observation}: {observation: Observation}) {
-  return <div className="composition-bar" role="img" aria-label={`Observed composition, sample ${observation.sample.id}`}>
-    {Object.entries(observation.proportions).map(([name,value],index) => <span key={name} style={{width:`${value*100}%`,background:colors[index%colors.length]}} title={`${categoryLabel(name)}: ${(value*100).toFixed(1)}%`}>{value>=.1 ? categoryLabel(name) : ''}</span>)}
-  </div>;
-}
+import { categoryLabel, CompositionBar } from './composition-bar';
 
 export function Workbench({snapshots}: {snapshots: Snapshot[]}) {
   const [snapshotId,setSnapshotId] = useState(snapshots[0]?.id ?? '');
@@ -80,7 +72,7 @@ export function Workbench({snapshots}: {snapshots: Snapshot[]}) {
           <Card><CardHeader><CardTitle>Observed lineage composition</CardTitle></CardHeader><CardContent className="stack">
             <label className="field inline-field">Inspect sample<NativeSelect value={observation.sample.id} onChange={e=>{contextSchema.parse({sample:e.target.value});setSampleId(e.target.value);}}>{observations.map(o=><NativeSelectOption key={o.sample.id} value={o.sample.id}>{o.sample.time} {experiment.time_unit} · {o.sample.id}</NativeSelectOption>)}</NativeSelect></label>
             <p className="muted small">{observation.sample.time>cutoff?'Held-out observation':observation.sample.time===cutoff?'Input observation at cutoff':'Input observation before cutoff'} · draft cutoff {cutoff} {experiment.time_unit}</p>
-            <CompositionBar observation={observation}/>
+            <CompositionBar categories={Object.entries(observation.proportions)} label={`Observed composition, sample ${observation.sample.id}`}/>
             <Table><TableHeader><TableRow><TableHead>Category</TableHead><TableHead>Observed count</TableHead><TableHead>Observed proportion</TableHead></TableRow></TableHeader><TableBody>{Object.entries(observation.sample.counts).map(([name,count])=><TableRow key={name}><TableCell>{categoryLabel(name)}</TableCell><TableCell>{count}</TableCell><TableCell>{((observation.proportions[name]??0)*100).toFixed(1)}%</TableCell></TableRow>)}<TableRow><TableCell>Sample total</TableCell><TableCell>{observation.total}</TableCell><TableCell>100.0%</TableCell></TableRow></TableBody></Table>
             {observation.sample.cell_state_summary && <div className="quiet"><strong>Descriptive cell-state information</strong><p>{observation.sample.cell_state_summary}</p><p>Cell state is separate from lineage identity.</p></div>}
             <p className="muted small">Proportions describe sampled composition, not absolute abundance. Non-detection does not establish extinction. Unknown ancestry stays in the denominator.</p>
