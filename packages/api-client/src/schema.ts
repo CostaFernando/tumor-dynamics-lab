@@ -94,6 +94,21 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** CategoryComparison */
+        CategoryComparison: {
+            /** Category */
+            category: string;
+            /** Predicted Proportion */
+            predicted_proportion: number;
+            /** Observed Proportion */
+            observed_proportion: number;
+            /** Observed Count */
+            observed_count: number;
+            /** Difference Percentage Points */
+            difference_percentage_points: number;
+            /** Previously Unseen */
+            previously_unseen: boolean;
+        };
         /** Culture */
         Culture: {
             /** Id */
@@ -157,6 +172,8 @@ export interface components {
             input_observations: components["schemas"]["Sample"][];
             /** Predictions */
             predictions: components["schemas"]["TargetPrediction"][];
+            /** Evaluations */
+            evaluations?: components["schemas"]["TargetEvaluation"][];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -247,6 +264,21 @@ export interface components {
             experiment: components["schemas"]["Experiment"];
             /** Observations */
             observations: components["schemas"]["Observation"][];
+        };
+        /** TargetEvaluation */
+        TargetEvaluation: {
+            /** Time */
+            time: number;
+            /** Sample Id */
+            sample_id: string;
+            /** Observed Total */
+            observed_total: number;
+            /** Total Variation Distance */
+            total_variation_distance: number;
+            /** Previously Unseen Share */
+            previously_unseen_share: number;
+            /** Categories */
+            categories: components["schemas"]["CategoryComparison"][];
         };
         /** TargetPrediction */
         TargetPrediction: {

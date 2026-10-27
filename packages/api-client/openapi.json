@@ -204,6 +204,52 @@
   },
   "components": {
     "schemas": {
+      "CategoryComparison": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Category"
+          },
+          "predicted_proportion": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Predicted Proportion"
+          },
+          "observed_proportion": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Observed Proportion"
+          },
+          "observed_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Observed Count"
+          },
+          "difference_percentage_points": {
+            "type": "number",
+            "title": "Difference Percentage Points"
+          },
+          "previously_unseen": {
+            "type": "boolean",
+            "title": "Previously Unseen"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "category",
+          "predicted_proportion",
+          "observed_proportion",
+          "observed_count",
+          "difference_percentage_points",
+          "previously_unseen"
+        ],
+        "title": "CategoryComparison"
+      },
       "Culture": {
         "properties": {
           "id": {
@@ -357,6 +403,13 @@
             },
             "type": "array",
             "title": "Predictions"
+          },
+          "evaluations": {
+            "items": {
+              "$ref": "#/components/schemas/TargetEvaluation"
+            },
+            "type": "array",
+            "title": "Evaluations"
           }
         },
         "additionalProperties": false,
@@ -634,6 +687,56 @@
           "observations"
         ],
         "title": "Snapshot"
+      },
+      "TargetEvaluation": {
+        "properties": {
+          "time": {
+            "type": "number",
+            "title": "Time"
+          },
+          "sample_id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Sample Id"
+          },
+          "observed_total": {
+            "type": "integer",
+            "minimum": 0.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Observed Total"
+          },
+          "total_variation_distance": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Total Variation Distance"
+          },
+          "previously_unseen_share": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Previously Unseen Share"
+          },
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryComparison"
+            },
+            "type": "array",
+            "title": "Categories"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "time",
+          "sample_id",
+          "observed_total",
+          "total_variation_distance",
+          "previously_unseen_share",
+          "categories"
+        ],
+        "title": "TargetEvaluation"
       },
       "TargetPrediction": {
         "properties": {

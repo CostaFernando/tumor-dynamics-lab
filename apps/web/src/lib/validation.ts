@@ -19,10 +19,13 @@ export const runConfigurationSchema: z.ZodType<RunConfiguration> = z.object({
   method:z.literal('last_observed'),
 });
 export const eligibilitySchema: z.ZodType<Eligibility> = z.object({available:z.boolean(),reason:z.string().nullable().optional()});
+const categoryComparisonSchema = z.object({category:identifier,predicted_proportion:z.number().finite().min(0).max(1),observed_proportion:z.number().finite().min(0).max(1),observed_count:z.number().int().nonnegative(),difference_percentage_points:z.number().finite(),previously_unseen:z.boolean()});
+const targetEvaluationSchema = z.object({time:z.number().finite(),sample_id:identifier,observed_total:z.number().int().positive(),total_variation_distance:z.number().finite().min(0).max(1),previously_unseen_share:z.number().finite().min(0).max(1),categories:z.array(categoryComparisonSchema)});
+export const evidenceSelectionSchema = z.object({time:z.number().finite(),unseenOnly:z.boolean()});
 export const runRecordSchema: z.ZodType<RunRecord> = z.object({
   id:identifier,configuration:runConfigurationSchema,status:z.enum(['queued','running','succeeded','failed','cancelled']),
   created_at:z.string(),method_version:z.string(),software_version:z.string(),settings:z.record(z.string(),z.union([z.boolean(),z.number().finite(),z.string()])),
   deterministic:z.boolean(),crosses_withdrawal:z.boolean(),error:z.string().nullable().optional(),
-  result:z.object({input_categories:z.array(z.string()),input_observations:z.array(sample),predictions:z.array(z.object({time:z.number().finite(),proportions:z.record(z.string(),z.number().finite().min(0).max(1))}))}).nullable().optional(),
+  result:z.object({input_categories:z.array(z.string()),input_observations:z.array(sample),predictions:z.array(z.object({time:z.number().finite(),proportions:z.record(z.string(),z.number().finite().min(0).max(1))})),evaluations:z.array(targetEvaluationSchema).optional()}).nullable().optional(),
 });
 export const runRecordsSchema = z.array(runRecordSchema);
