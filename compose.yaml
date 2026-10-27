@@ -1,0 +1,50 @@
+x-runtime: &runtime
+  image: tumor-dynamics-lab:local
+  build:
+    context: .
+    args:
+      TDL_API_URL: http://api:8000
+  environment:
+    TDL_DATA_DIR: /research
+    NEXT_TELEMETRY_DISABLED: "1"
+    DO_NOT_TRACK: "1"
+  volumes:
+    - research:/research
+  networks:
+    - research
+
+services:
+  demo:
+    <<: *runtime
+    command: ["tdl", "demo"]
+  api:
+    <<: *runtime
+    command: ["uvicorn", "tumor_api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+    depends_on:
+      demo:
+        condition: service_completed_successfully
+  worker:
+    <<: *runtime
+    command: ["tdl", "worker"]
+    depends_on:
+      demo:
+        condition: service_completed_successfully
+  web:
+    <<: *runtime
+    command: ["node", "node_modules/next/dist/bin/next", "start", "--hostname", "0.0.0.0", "--port", "3000"]
+    working_dir: /app/apps/web
+    networks:
+      - research
+      - ingress
+    depends_on:
+      - api
+    ports:
+      - "127.0.0.1:${TDL_WEB_PORT:-3000}:3000"
+
+volumes:
+  research:
+
+networks:
+  research:
+    internal: true
+  ingress:

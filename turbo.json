@@ -1,0 +1,43 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    "pyproject.toml",
+    "uv.lock",
+    "packages/science/src/**",
+    "apps/api/src/**",
+    "packages/science/pyproject.toml",
+    "apps/api/pyproject.toml",
+    "scripts/**"
+  ],
+  "globalEnv": [
+    "TDL_DATA_DIR",
+    "TDL_API_URL"
+  ],
+  "tasks": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "check": {
+      "dependsOn": [
+        "^check"
+      ],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": [
+        "^check"
+      ],
+      "outputs": []
+    },
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**"
+      ]
+    }
+  }
+}

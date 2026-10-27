@@ -1,0 +1,193 @@
+{
+  "id": "bca0ff57a9d74efe9cfc308ce69b933d",
+  "configuration": {
+    "snapshot_id": "9034c7b15e08740295c68cd16ddcdff472a4c64daabbf887c47038e829a9a7e9",
+    "culture_id": "culture-01",
+    "scope": "whole culture",
+    "cutoff": 7.0,
+    "targets": [
+      14.0,
+      21.0
+    ],
+    "method": "last_observed"
+  },
+  "status": "succeeded",
+  "created_at": "2026-10-27T17:44:46.095738+00:00",
+  "method_version": "last-observed-v1",
+  "software_version": "0.1.0",
+  "settings": {
+    "smoothing": false
+  },
+  "deterministic": true,
+  "crosses_withdrawal": true,
+  "error": null,
+  "result": {
+    "input_categories": [
+      "A",
+      "B",
+      "C",
+      "__unknown__"
+    ],
+    "input_observations": [
+      {
+        "id": "day-0",
+        "culture_id": "culture-01",
+        "scope": "whole culture",
+        "time": 0.0,
+        "counts": {
+          "A": 40,
+          "B": 30,
+          "C": 20,
+          "__unknown__": 10
+        },
+        "cell_state_summary": null
+      },
+      {
+        "id": "day-3",
+        "culture_id": "culture-01",
+        "scope": "whole culture",
+        "time": 3.0,
+        "counts": {
+          "A": 50,
+          "B": 25,
+          "C": 15,
+          "__unknown__": 10
+        },
+        "cell_state_summary": null
+      },
+      {
+        "id": "day-7",
+        "culture_id": "culture-01",
+        "scope": "whole culture",
+        "time": 7.0,
+        "counts": {
+          "A": 65,
+          "B": 25,
+          "C": 0,
+          "__unknown__": 10
+        },
+        "cell_state_summary": null
+      }
+    ],
+    "predictions": [
+      {
+        "time": 14.0,
+        "proportions": {
+          "A": 0.65,
+          "B": 0.25,
+          "C": 0.0,
+          "__unknown__": 0.1
+        }
+      },
+      {
+        "time": 21.0,
+        "proportions": {
+          "A": 0.65,
+          "B": 0.25,
+          "C": 0.0,
+          "__unknown__": 0.1
+        }
+      }
+    ],
+    "evaluations": [
+      {
+        "time": 14.0,
+        "sample_id": "day-14",
+        "observed_total": 100,
+        "total_variation_distance": 0.2,
+        "previously_unseen_share": 0.1,
+        "categories": [
+          {
+            "category": "A",
+            "predicted_proportion": 0.65,
+            "observed_proportion": 0.45,
+            "observed_count": 45,
+            "difference_percentage_points": 20.0,
+            "previously_unseen": false
+          },
+          {
+            "category": "B",
+            "predicted_proportion": 0.25,
+            "observed_proportion": 0.25,
+            "observed_count": 25,
+            "difference_percentage_points": 0.0,
+            "previously_unseen": false
+          },
+          {
+            "category": "C",
+            "predicted_proportion": 0.0,
+            "observed_proportion": 0.1,
+            "observed_count": 10,
+            "difference_percentage_points": -10.0,
+            "previously_unseen": false
+          },
+          {
+            "category": "D",
+            "predicted_proportion": 0.0,
+            "observed_proportion": 0.1,
+            "observed_count": 10,
+            "difference_percentage_points": -10.0,
+            "previously_unseen": true
+          },
+          {
+            "category": "__unknown__",
+            "predicted_proportion": 0.1,
+            "observed_proportion": 0.1,
+            "observed_count": 10,
+            "difference_percentage_points": 0.0,
+            "previously_unseen": false
+          }
+        ]
+      },
+      {
+        "time": 21.0,
+        "sample_id": "day-21",
+        "observed_total": 100,
+        "total_variation_distance": 0.35000000000000003,
+        "previously_unseen_share": 0.15,
+        "categories": [
+          {
+            "category": "A",
+            "predicted_proportion": 0.65,
+            "observed_proportion": 0.3,
+            "observed_count": 30,
+            "difference_percentage_points": 35.0,
+            "previously_unseen": false
+          },
+          {
+            "category": "B",
+            "predicted_proportion": 0.25,
+            "observed_proportion": 0.25,
+            "observed_count": 25,
+            "difference_percentage_points": 0.0,
+            "previously_unseen": false
+          },
+          {
+            "category": "C",
+            "predicted_proportion": 0.0,
+            "observed_proportion": 0.2,
+            "observed_count": 20,
+            "difference_percentage_points": -20.0,
+            "previously_unseen": false
+          },
+          {
+            "category": "D",
+            "predicted_proportion": 0.0,
+            "observed_proportion": 0.15,
+            "observed_count": 15,
+            "difference_percentage_points": -15.0,
+            "previously_unseen": true
+          },
+          {
+            "category": "__unknown__",
+            "predicted_proportion": 0.1,
+            "observed_proportion": 0.1,
+            "observed_count": 10,
+            "difference_percentage_points": 0.0,
+            "previously_unseen": false
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "tumor-dynamics-lab",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "scripts": {
+    "dev": "turbo dev",
+    "check": "turbo check",
+    "test": "turbo test",
+    "build": "turbo build",
+    "demo": "uv run tdl demo",
+    "api:generate": "uv run python scripts/export_openapi.py && pnpm --filter @tdl/api-client generate",
+    "worker": "uv run tdl worker",
+    "verify:release": "uv run --offline --no-sync python scripts/verify_release.py",
+    "benchmark:demo": "uv run --offline --no-sync python scripts/benchmark_demo.py"
+  },
+  "devDependencies": {
+    "turbo": "^2.11.10"
+  }
+}

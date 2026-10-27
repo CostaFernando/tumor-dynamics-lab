@@ -1,0 +1,20 @@
+{
+  "format_version": "1",
+  "id": "prepared-format-example",
+  "name": "Prepared format example (fictional)",
+  "synthetic": true,
+  "time_unit": "days",
+  "description": "Small fictional input showing separate cultures and sampling scopes.",
+  "acquisition": "Original fictional counts authored for format documentation; no real dataset.",
+  "redistribution": "MIT; original synthetic example.",
+  "cultures": [
+    {"id": "culture-a", "name": "Culture A", "treatments": [{"name": "Fictional agent", "start": 0, "end": 2, "dose": "Illustrative 1 micromolar"}]},
+    {"id": "culture-b", "name": "Culture B", "treatments": []}
+  ],
+  "samples": [
+    {"id": "a-0", "culture_id": "culture-a", "scope": "whole culture", "time": 0, "counts": {"A": 6, "B": 2, "__unknown__": 2}, "cell_state_summary": "Fictional descriptive stress program; separate from lineage identity."},
+    {"id": "a-3", "culture_id": "culture-a", "scope": "whole culture", "time": 3, "counts": {"A": 4, "B": 4, "__unknown__": 2}},
+    {"id": "a-sorted-0", "culture_id": "culture-a", "scope": "selected fraction", "time": 0, "counts": {"A": 1, "B": 2, "__unknown__": 1}},
+    {"id": "b-0", "culture_id": "culture-b", "scope": "whole culture", "time": 0, "counts": {"A": 1, "B": 3, "__unknown__": 0}}
+  ]
+}

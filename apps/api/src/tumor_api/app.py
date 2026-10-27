@@ -1,0 +1,85 @@
+from pathlib import Path
+from fastapi import FastAPI, HTTPException, Response
+from tumor_dynamics.models import Snapshot
+from tumor_dynamics.storage import Store
+from tumor_dynamics.forecasting import RunConfiguration, Eligibility, eligibility
+from tumor_dynamics.runs import RunRepository, RunRecord, RunId
+from tumor_dynamics.exports import ExportRequest, export_evidence
+
+
+def create_app(root: Path | str | None = None) -> FastAPI:
+    app = FastAPI(title='Tumor Dynamics Lab', version='0.1.0')
+    # Initialize storage on request, so contract generation has no side effects.
+    def store():
+        return Store(root)
+
+    @app.get('/snapshots', response_model=list[Snapshot], operation_id='list_snapshots')
+    def list_snapshots():
+        return store().list_snapshots()
+
+    @app.get('/snapshots/{snapshot_id}', response_model=Snapshot, operation_id='get_snapshot')
+    def get_snapshot(snapshot_id: str):
+        try:
+            return store().get_snapshot(snapshot_id)
+        except KeyError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+
+    @app.post('/forecast/eligibility', response_model=Eligibility, operation_id='forecast_eligibility')
+    def forecast_eligibility(configuration: RunConfiguration):
+        try:
+            return eligibility(store().get_snapshot(configuration.snapshot_id).experiment, configuration)
+        except KeyError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+
+    @app.post('/runs', response_model=RunRecord, status_code=201, operation_id='create_run')
+    def create_run(configuration: RunConfiguration):
+        try:
+            return RunRepository(store()).enqueue(configuration)
+        except KeyError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+        except ValueError as error:
+            raise HTTPException(status_code=422, detail=str(error)) from error
+
+    @app.get('/runs', response_model=list[RunRecord], operation_id='list_runs')
+    def list_runs():
+        return RunRepository(store()).list()
+
+    @app.get('/runs/{run_id}', response_model=RunRecord, operation_id='get_run')
+    def get_run(run_id: str):
+        try:
+            return RunRepository(store()).get(run_id)
+        except KeyError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+
+    @app.post('/runs/{run_id}/cancel', response_model=RunRecord, operation_id='cancel_run')
+    def cancel_run(run_id: RunId):
+        try:
+            return RunRepository(store()).cancel(run_id)
+        except KeyError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+
+    @app.post('/runs/{run_id}/retry', response_model=RunRecord, status_code=201, operation_id='retry_run')
+    def retry_run(run_id: RunId):
+        try:
+            return RunRepository(store()).retry(run_id)
+        except KeyError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+        except ValueError as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+
+    @app.get('/runs/{run_id}/export', response_class=Response, operation_id='export_run',
+             responses={200: {'content': {'application/zip': {'schema': {'type': 'string', 'format': 'binary'}}}, 'description': 'Saved evidence ZIP'},
+                        409: {'description': 'Evidence export unavailable'}})
+    def export_run(run_id: RunId):
+        try:
+            content = export_evidence(store(), ExportRequest(run_id=run_id))
+            return Response(content, media_type='application/zip', headers={'Content-Disposition': f'attachment; filename="evidence-{run_id}.zip"'})
+        except KeyError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+        except ValueError as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+
+    return app
+
+
+app = create_app()

@@ -4,9 +4,22 @@ A local research workbench for exploring how tumor populations change during tre
 
 ## Project status
 
-Design agreed on 2026-10-26. This repository currently contains the project documentation and agent configuration. The application, installation commands and Docker environment will be added during implementation.
+The local implementation supports prepared-folder imports, an immutable synthetic demonstration, both baseline predictors, saved held-out evaluation, cancellation/interruption/retry, history and evidence ZIP export. The Next.js research workbench includes the inspect → configure → review walkthrough. See [installation and development](docs/development.md), [release verification](docs/release-verification.md) and [evidence bundles](docs/evidence-export.md).
 
-The authoritative first-release specification lives in GitHub Issues; see the specification link below. Features described here are planned capabilities.
+The authoritative first-release specification lives in GitHub Issues; see the specification link below. Verification uses fictional data and establishes software behavior; real-data biological validation remains future work.
+
+## Quick start
+
+Install Node.js 22+, pnpm 11.25.0, Python 3.12+ and uv, then run:
+
+```sh
+pnpm install --frozen-lockfile
+uv sync --frozen
+pnpm demo
+pnpm dev
+```
+
+Open `http://127.0.0.1:3000`. Dependencies and local assets must be installed before offline execution. The [release guide](docs/release-verification.md) describes production startup, offline checks and Docker persistence. The Docker image, separate-service workflow, persistent storage and evidence downloads have also been verified; the release guide distinguishes native offline isolation from the normal Compose network scope.
 
 ## First release
 
@@ -23,7 +36,7 @@ The release includes an explicitly fictional, CPU-only demonstration that operat
 
 The longer-term research direction includes temporal cancer datasets such as SUM159PT, Watermelon and TS543. Dataset adapters, gene-expression forecasting and learned models follow the first release. This is a research project; clinical treatment selection is outside its scope.
 
-## Planned architecture
+## Architecture
 
 | Component | Responsibility |
 | --- | --- |
@@ -34,7 +47,7 @@ The longer-term research direction includes temporal cancer datasets such as SUM
 | SQLite and local files | Metadata, queue, immutable snapshots and results |
 | pnpm + uv + Turborepo | Language workspaces and coordinated development commands |
 
-The TypeScript API client will be generated from the Python API contract. The scientific package will also run from a CLI and tests. Start with one local user and one worker.
+The TypeScript API client is generated from the Python API contract. The scientific package runs independently through the CLI and tests. The supported installation uses one local user and one worker on macOS/Linux.
 
 ## Documentation
 
@@ -50,7 +63,7 @@ Specifications and implementation tickets live in GitHub Issues. The repository 
 
 ## Data and reproducibility
 
-Prepared inputs begin with experiment metadata and lineage counts per sample; full expression matrices are optional. Imports will create immutable local snapshots. Each run will identify its input snapshot, method version, cutoff, settings and outcomes.
+Prepared inputs begin with experiment metadata and lineage counts per sample; full expression matrices are optional. Imports create immutable local snapshots. Each run identifies its input snapshot, method version, cutoff, settings and outcomes.
 
 Local datasets, run artifacts, databases, exports and credentials are excluded from Git. Small synthetic fixtures can be versioned under `fixtures/`. Dataset redistribution permissions are checked separately from the project license.
 

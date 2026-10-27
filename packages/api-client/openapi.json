@@ -1,0 +1,969 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Tumor Dynamics Lab",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/snapshots": {
+      "get": {
+        "summary": "List Snapshots",
+        "operationId": "list_snapshots",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Snapshot"
+                  },
+                  "type": "array",
+                  "title": "Response List Snapshots"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/snapshots/{snapshot_id}": {
+      "get": {
+        "summary": "Get Snapshot",
+        "operationId": "get_snapshot",
+        "parameters": [
+          {
+            "name": "snapshot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Snapshot Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Snapshot"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/forecast/eligibility": {
+      "post": {
+        "summary": "Forecast Eligibility",
+        "operationId": "forecast_eligibility",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunConfiguration"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Eligibility"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/runs": {
+      "get": {
+        "summary": "List Runs",
+        "operationId": "list_runs",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RunRecord"
+                  },
+                  "type": "array",
+                  "title": "Response List Runs"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Run",
+        "operationId": "create_run",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunConfiguration"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/runs/{run_id}": {
+      "get": {
+        "summary": "Get Run",
+        "operationId": "get_run",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/runs/{run_id}/cancel": {
+      "post": {
+        "summary": "Cancel Run",
+        "operationId": "cancel_run",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{32}$",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/runs/{run_id}/retry": {
+      "post": {
+        "summary": "Retry Run",
+        "operationId": "retry_run",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{32}$",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/runs/{run_id}/export": {
+      "get": {
+        "summary": "Export Run",
+        "operationId": "export_run",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{32}$",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Saved evidence ZIP",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Evidence export unavailable"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CategoryComparison": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Category"
+          },
+          "predicted_proportion": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Predicted Proportion"
+          },
+          "observed_proportion": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Observed Proportion"
+          },
+          "observed_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Observed Count"
+          },
+          "difference_percentage_points": {
+            "type": "number",
+            "title": "Difference Percentage Points"
+          },
+          "previously_unseen": {
+            "type": "boolean",
+            "title": "Previously Unseen"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "category",
+          "predicted_proportion",
+          "observed_proportion",
+          "observed_count",
+          "difference_percentage_points",
+          "previously_unseen"
+        ],
+        "title": "CategoryComparison"
+      },
+      "Culture": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "treatments": {
+            "items": {
+              "$ref": "#/components/schemas/Treatment"
+            },
+            "type": "array",
+            "title": "Treatments"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "Culture"
+      },
+      "Eligibility": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "available"
+        ],
+        "title": "Eligibility"
+      },
+      "Experiment": {
+        "properties": {
+          "format_version": {
+            "type": "string",
+            "const": "1",
+            "title": "Format Version",
+            "default": "1"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "synthetic": {
+            "type": "boolean",
+            "title": "Synthetic"
+          },
+          "time_unit": {
+            "type": "string",
+            "enum": [
+              "hours",
+              "days"
+            ],
+            "title": "Time Unit"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "acquisition": {
+            "type": "string",
+            "title": "Acquisition",
+            "default": ""
+          },
+          "redistribution": {
+            "type": "string",
+            "title": "Redistribution",
+            "default": ""
+          },
+          "cultures": {
+            "items": {
+              "$ref": "#/components/schemas/Culture"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Cultures"
+          },
+          "samples": {
+            "items": {
+              "$ref": "#/components/schemas/Sample"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Samples"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "synthetic",
+          "time_unit",
+          "cultures",
+          "samples"
+        ],
+        "title": "Experiment"
+      },
+      "ForecastResult": {
+        "properties": {
+          "input_categories": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Input Categories"
+          },
+          "input_observations": {
+            "items": {
+              "$ref": "#/components/schemas/Sample"
+            },
+            "type": "array",
+            "title": "Input Observations"
+          },
+          "predictions": {
+            "items": {
+              "$ref": "#/components/schemas/TargetPrediction"
+            },
+            "type": "array",
+            "title": "Predictions"
+          },
+          "evaluations": {
+            "items": {
+              "$ref": "#/components/schemas/TargetEvaluation"
+            },
+            "type": "array",
+            "title": "Evaluations"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "input_categories",
+          "input_observations",
+          "predictions"
+        ],
+        "title": "ForecastResult"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Observation": {
+        "properties": {
+          "sample": {
+            "$ref": "#/components/schemas/Sample"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "proportions": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Proportions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "sample",
+          "total",
+          "proportions"
+        ],
+        "title": "Observation"
+      },
+      "RunConfiguration": {
+        "properties": {
+          "snapshot_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Snapshot Id"
+          },
+          "culture_id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Culture Id"
+          },
+          "scope": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Scope"
+          },
+          "cutoff": {
+            "type": "number",
+            "title": "Cutoff"
+          },
+          "targets": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Targets"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "last_observed",
+              "damped_trend"
+            ],
+            "title": "Method",
+            "default": "last_observed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "snapshot_id",
+          "culture_id",
+          "scope",
+          "cutoff",
+          "targets"
+        ],
+        "title": "RunConfiguration"
+      },
+      "RunRecord": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/RunConfiguration"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "method_version": {
+            "type": "string",
+            "title": "Method Version"
+          },
+          "software_version": {
+            "type": "string",
+            "title": "Software Version"
+          },
+          "settings": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Settings"
+          },
+          "deterministic": {
+            "type": "boolean",
+            "title": "Deterministic",
+            "default": true
+          },
+          "crosses_withdrawal": {
+            "type": "boolean",
+            "title": "Crosses Withdrawal"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ForecastResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "configuration",
+          "status",
+          "created_at",
+          "method_version",
+          "software_version",
+          "settings",
+          "crosses_withdrawal"
+        ],
+        "title": "RunRecord"
+      },
+      "Sample": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "culture_id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Culture Id"
+          },
+          "scope": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Scope"
+          },
+          "time": {
+            "type": "number",
+            "title": "Time"
+          },
+          "counts": {
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0.0
+            },
+            "propertyNames": {
+              "maxLength": 200,
+              "minLength": 1
+            },
+            "type": "object",
+            "title": "Counts"
+          },
+          "cell_state_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cell State Summary"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "culture_id",
+          "scope",
+          "time",
+          "counts"
+        ],
+        "title": "Sample"
+      },
+      "Snapshot": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "experiment": {
+            "$ref": "#/components/schemas/Experiment"
+          },
+          "observations": {
+            "items": {
+              "$ref": "#/components/schemas/Observation"
+            },
+            "type": "array",
+            "title": "Observations"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "experiment",
+          "observations"
+        ],
+        "title": "Snapshot"
+      },
+      "TargetEvaluation": {
+        "properties": {
+          "time": {
+            "type": "number",
+            "title": "Time"
+          },
+          "sample_id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Sample Id"
+          },
+          "observed_total": {
+            "type": "integer",
+            "minimum": 0.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Observed Total"
+          },
+          "total_variation_distance": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Total Variation Distance"
+          },
+          "previously_unseen_share": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Previously Unseen Share"
+          },
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryComparison"
+            },
+            "type": "array",
+            "title": "Categories"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "time",
+          "sample_id",
+          "observed_total",
+          "total_variation_distance",
+          "previously_unseen_share",
+          "categories"
+        ],
+        "title": "TargetEvaluation"
+      },
+      "TargetPrediction": {
+        "properties": {
+          "time": {
+            "type": "number",
+            "title": "Time"
+          },
+          "proportions": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Proportions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "time",
+          "proportions"
+        ],
+        "title": "TargetPrediction"
+      },
+      "Treatment": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "start": {
+            "type": "number",
+            "title": "Start"
+          },
+          "end": {
+            "type": "number",
+            "title": "End"
+          },
+          "dose": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dose"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "start",
+          "end"
+        ],
+        "title": "Treatment"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
