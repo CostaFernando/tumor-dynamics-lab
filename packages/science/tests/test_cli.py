@@ -36,3 +36,17 @@ def test_cli_import_exposes_valid_snapshot_and_actionable_rejection(tmp_path):
     assert rejected.returncode == 1
     assert 'samples.0.counts.A' in rejected.stderr
     assert 'greater than or equal to 0' in rejected.stderr
+
+
+def test_cli_forecast_runs_in_an_independent_worker_process_and_reopens(tmp_path):
+    env = dict(os.environ, TDL_DATA_DIR=str(tmp_path))
+    def run(*args):
+        return subprocess.run([sys.executable,'-m','tumor_dynamics.cli',*args],env=env,text=True,capture_output=True,check=True)
+    snapshot = json.loads(run('demo').stdout)['snapshot_id']
+    queued = json.loads(run('forecast','--snapshot',snapshot,'--culture','culture-01','--scope','whole culture','--cutoff','7','--target','14','--target','21').stdout)
+    assert queued['status'] == 'queued'
+    run('worker','--once')
+    saved = json.loads(run('run',queued['id']).stdout)
+    assert saved['status'] == 'succeeded'
+    assert saved['configuration']['cutoff'] == 7
+    assert saved['result']['predictions'][0]['proportions'] == {'A':.65,'B':.25,'C':0,'__unknown__':.1}

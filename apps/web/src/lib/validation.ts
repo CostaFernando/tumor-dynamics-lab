@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { Snapshot } from '@tdl/api-client';
+import type { Snapshot, RunRecord, RunConfiguration, Eligibility } from '@tdl/api-client';
 
 const identifier = z.string().min(1).max(200);
 const treatment = z.object({name:identifier,start:z.number().finite(),end:z.number().finite(),dose:z.string().nullable().optional()});
@@ -12,3 +12,17 @@ export const snapshotSchema: z.ZodType<Snapshot> = z.object({
 });
 export const snapshotsSchema = z.array(snapshotSchema);
 export const contextSchema = z.object({snapshot:z.string().regex(/^[a-f0-9]{64}$/).optional(),culture:identifier.optional(),scope:identifier.optional(),sample:identifier.optional()});
+
+export const runConfigurationSchema: z.ZodType<RunConfiguration> = z.object({
+  snapshot_id:z.string().regex(/^[a-f0-9]{64}$/), culture_id:identifier, scope:identifier,
+  cutoff:z.number().finite(), targets:z.array(z.number().finite()).min(1).refine(values=>new Set(values).size===values.length,'Choose each target once.'),
+  method:z.literal('last_observed'),
+});
+export const eligibilitySchema: z.ZodType<Eligibility> = z.object({available:z.boolean(),reason:z.string().nullable().optional()});
+export const runRecordSchema: z.ZodType<RunRecord> = z.object({
+  id:identifier,configuration:runConfigurationSchema,status:z.enum(['queued','running','succeeded','failed','cancelled']),
+  created_at:z.string(),method_version:z.string(),software_version:z.string(),settings:z.record(z.string(),z.union([z.boolean(),z.number().finite(),z.string()])),
+  deterministic:z.boolean(),crosses_withdrawal:z.boolean(),error:z.string().nullable().optional(),
+  result:z.object({input_categories:z.array(z.string()),input_observations:z.array(sample),predictions:z.array(z.object({time:z.number().finite(),proportions:z.record(z.string(),z.number().finite().min(0).max(1))}))}).nullable().optional(),
+});
+export const runRecordsSchema = z.array(runRecordSchema);

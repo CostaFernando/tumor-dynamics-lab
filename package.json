@@ -8,7 +8,8 @@
     "test": "turbo test",
     "build": "turbo build",
     "demo": "uv run tdl demo",
-    "api:generate": "uv run python scripts/export_openapi.py && pnpm --filter @tdl/api-client generate"
+    "api:generate": "uv run python scripts/export_openapi.py && pnpm --filter @tdl/api-client generate",
+    "worker": "uv run tdl worker"
   },
   "devDependencies": {
     "turbo": "^2.11.10"
